@@ -1,3 +1,7 @@
-densiteArbre = 8000;
-diamArbre = 9 * 1000;
-longArbre = 90 * 1000;
+rho_r = 8000;
+D_r = 9 * 1000;
+L_r = 90 * 1000;
+
+rho_a = 7000;
+D_a = 7 * 1000;
+L_a = 45 * 1000;
