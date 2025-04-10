@@ -36,6 +36,7 @@ J_pz = 0.20 / 1000^2;
 % Courroie
 E_c = 2 * 10^9;
 h_c = 9 / 1000;
+t_c = 0.8 /1000;
 l_c1 = 280 / 1000;
 l_c2 = 150 / 1000;
 l_c3 = 200 / 1000;
@@ -43,6 +44,8 @@ l_c4 = 190 / 1000;
 l_c5 = 120 / 1000;
 l_c6 = 120 / 1000;
 l_c7 = 300 / 1000;
+
+l_cArray = [l_c1 l_c2 l_c3 l_c4 l_c5 l_c6 l_c7];
 
 % Valeurs empiriques couple résistant rotor
 T_resNulle = 1.4 / 1000;
