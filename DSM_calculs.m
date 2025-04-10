@@ -4,13 +4,13 @@ DSM_constants;
 %----------------------------------------------------------
 % Calculs pour le projet à partir de cette ligne
 
-m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*L_r/4 - pi*D_a*D_a*L_a/4)*rho_r + pi*D_a*D_a*L_a/4*rho_a; % masse totale
+m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*L_r/4 - pi*D_a*D_a*L_a/4)*rho_r + pi*D_a*D_a*L_a/4*rho_a % masse totale
 
-m_a = pi*(D_a*D_a - D_i*D_i)/4*L_a*rho_a; % masse aimant
+m_a = pi*(D_a*D_a - D_i*D_i)/4*L_a*rho_a % masse aimant
 
-m_r1 = pi*(D_r*D_r - D_a*D_a)/4*L_a*rho_r; % masse autour aimant
+m_r1 = pi*(D_r*D_r - D_a*D_a)/4*L_a*rho_r % masse autour aimant
 
-m_r2 = pi*(D_r*D_r - D_i*D_i)/4*(L_r - L_a) * rho_r; % reste de la masse
+m_r2 = pi*(D_r*D_r - D_i*D_i)/4*(L_r - L_a) * rho_r % reste de la masse
 
 z_CG = (m_a*L_a/2 + m_r1*L_a/2 + m_r2*(3*L_r/4))/m_r; % depuis le point le plus à gauche
 
@@ -48,5 +48,5 @@ k_lz = E_l*L_l*t_l/h_l;
 
     % calcul des inertie au centre de masse du rotor:
 
-    J_y1 = J_y1g + M_1*()
+    %J_y1 = J_y1g + M_1*()
     
