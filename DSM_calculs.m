@@ -24,3 +24,9 @@ z_support2CG = z_sup2 - z_CG; % position du support 2 par rapport au CG
 
 z_balourdCG = z_CGcentre + L_a/2;
 
+Jrz = pi/32*(rho_r*(L_r - L_a)*(D_r^4 - D_i^4) + rho_a*L_a*(D_a^4 - D_i^4) + rho_r*L_a*(D_r^4 - D_a^4));
+
+k_lx = E_l*L_l*h_l/t_l;
+
+k_lz = E_l*L_l*t_l/h_l;
+
