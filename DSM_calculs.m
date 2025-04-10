@@ -59,4 +59,8 @@ k_c6 = E_c * h_c * t_c / l_c6;
 k_c7 = E_c * h_c * t_c / l_c7;
 
 
+I_lx=t_l*(h_l^3)/12;
+I_lz=h_l*(t_l^3)/12;
+kl_x = 12*E_l*I_lz/L_l^3
+kl_z = 12*E_l*I_lx/L_l^3
     
