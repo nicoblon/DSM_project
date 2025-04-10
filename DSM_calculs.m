@@ -51,6 +51,20 @@ k_lz = E_l*L_l*t_l/h_l;
 
     % calcul des inertie au centre de masse du rotor:
 
+    
+    
+
+Jrz = pi/32*(rho_r*(L_r - L_a)*(D_r^4 - D_i^4) + rho_a*L_a*(D_a^4 - D_i^4) + rho_r*L_a*(D_r^4 - D_a^4));
+k_lx = E_l*L_l*h_l/t_l;
+k_lz = E_l*L_l*t_l/h_l;
+
+k_c1 = E_c * h_c * t_c / l_c1;
+k_c2 = E_c * h_c * t_c / l_c2;
+k_c3 = E_c * h_c * t_c / l_c3;
+k_c4 = E_c * h_c * t_c / l_c4;
+k_c5 = E_c * h_c * t_c / l_c5;
+k_c6 = E_c * h_c * t_c / l_c6;
+k_c7 = E_c * h_c * t_c / l_c7;
 
 
     J_y1 = J_y1cg + M_1*(L_a/2 + 0.5*L_r - z_CG)^2;
