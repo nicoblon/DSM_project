@@ -39,11 +39,14 @@ z_balourdCG = z_CGcentre + L_a/2;
     % formule pour un cylindre creux autour de leur centre de gravité: 
     % J_y = J_x = (1/12)*M*(3*R_i + 3*R_e + l^2)
 
-    J_y1g = (1/12)*M_1*(3*D_r/2 + 3*D_i/2 + (L_r - L_a)^2);
-    J_y2g = (1/12)*M_2*(3*D_r/2 + 3*D_a/2 + L_a^2);
-    J_y3g = (1/12)*M_3*(3*D_a/2 + 3*D_i/2 + L_a^2);
+    J_y1cg = (1/12)*M_1*(3*D_r/2 + 3*D_i/2 + (L_r - L_a)^2);
+    J_y2cg = (1/12)*M_2*(3*D_r/2 + 3*D_a/2 + L_a^2);
+    J_y3cg = (1/12)*M_3*(3*D_a/2 + 3*D_i/2 + L_a^2);
 
     % calcul des inertie au centre de masse du rotor:
 
-    J_y1 = J_y1g + M_1*()
-    
+    J_y1 = J_y1cg + M_1*(L_a/2 + 0.5*L_r - z_CG)^2;
+    J_y2 = J_y2cg + M_2*(z_CG - L_r/2)^2;
+    J_y3 = J_y3cg + M_3*(z_CG - L_r/2)^2;
+
+    J_ry = J_y1 + J_y2 + J_y3 % Inertie totale du rotor autour de y
