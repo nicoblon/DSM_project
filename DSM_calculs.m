@@ -30,7 +30,7 @@ k_lz = E_l*L_l*t_l/h_l;
 
 % Moment d'inertie z rotor:
 
-J_rz = pi/32*(rho_r*(L_r - L_a)*(D_r^4 - D_i^4) + rho_a*L_a*(D_a^4 - D_i^4) + rho_r*L_a*(D_r^4 - D_a^4));
+    J_rz = pi/32*(rho_r*(L_r - L_a)*(D_r^4 - D_i^4) + rho_a*L_a*(D_a^4 - D_i^4) + rho_r*L_a*(D_r^4 - D_a^4));
 
 % Moment d'inertie y rotor: 
 
