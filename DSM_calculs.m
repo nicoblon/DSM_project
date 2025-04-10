@@ -24,9 +24,29 @@ z_support2CG = z_sup2 - z_CG; % position du support 2 par rapport au CG
 
 z_balourdCG = z_CGcentre + L_a/2;
 
+% Moment d'inertie y rotor 
 Jrz = pi/32*(rho_r*(L_r - L_a)*(D_r^4 - D_i^4) + rho_a*L_a*(D_a^4 - D_i^4) + rho_r*L_a*(D_r^4 - D_a^4));
 
+    % découpage du rotor en trois cylindre de même densité. 
+    % part 1: arbre de longueur L_r - L_a
+    % part 2: arbre de longueur L_a
+    % part 3: aimant de longueur L_a
 k_lx = E_l*L_l*h_l/t_l;
 
+    % Masses des différentes partie:
+    M_1 = (pi/4)*rho_r*(D_r^2 - D_i^2)*(L_r - L_a);
+    M_2 = (pi/4)*rho_r*(D_r^2 - D_a^2)*L_a;
+    M_3 = (pi/4)*rho_a*(D_a^2 - D_i^2)*L_a;
 k_lz = E_l*L_l*t_l/h_l;
 
+    % formule pour un cylindre creux autour de leur centre de gravité: 
+    % J_y = J_x = (1/12)*M*(3*R_i + 3*R_e + l^2)
+
+    J_y1g = (1/12)*M_1*(3*D_r/2 + 3*D_i/2 + (L_r - L_a)^2);
+    J_y2g = (1/12)*M_2*(3*D_r/2 + 3*D_a/2 + L_a^2);
+    J_y3g = (1/12)*M_3*(3*D_a/2 + 3*D_i/2 + L_a^2);
+
+    % calcul des inertie au centre de masse du rotor:
+
+    J_y1 = J_y1g + M_1*()
+    
