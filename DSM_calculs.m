@@ -4,29 +4,27 @@ DSM_constants;
 %----------------------------------------------------------
 % Calculs pour le projet à partir de cette ligne
 
-m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*L_r/4 - pi*D_a*D_a*L_a/4)*rho_r + pi*D_a*D_a*L_a/4*rho_a; % masse totale
+% masse totale du système
 
-m_a = pi*(D_a*D_a - D_i*D_i)/4*L_a*rho_a; % masse aimant
+    m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*L_r/4 - pi*D_a*D_a*L_a/4)*rho_r + pi*D_a*D_a*L_a/4*rho_a; % masse totale
 
-m_r1 = pi*(D_r*D_r - D_a*D_a)/4*L_a*rho_r; % masse autour aimant
+% masses des différents composants
 
-m_r2 = pi*(D_r*D_r - D_i*D_i)/4*(L_r - L_a) * rho_r; % reste de la masse
+    m_a = pi*(D_a*D_a - D_i*D_i)/4*L_a*rho_a; % masse aimant
+    m_r1 = pi*(D_r*D_r - D_a*D_a)/4*L_a*rho_r; % masse autour aimant
+    m_r2 = pi*(D_r*D_r - D_i*D_i)/4*(L_r - L_a) * rho_r; % reste de la masse
 
-z_CG = (m_a*L_a/2 + m_r1*L_a/2 + m_r2*(3*L_r/4))/m_r; % depuis le point le plus à gauche
+% position du centre de gravité
 
-z_CGcentre = z_CG - L_r/2; % centre de masse sur z par rapport au centre
+    z_CG = (m_a*L_a/2 + m_r1*L_a/2 + m_r2*(3*L_r/4))/m_r; % depuis le point le plus à gauche
+    z_CGcentre = z_CG - L_r/2; % centre de masse sur z par rapport au centre
+    y_CGcentre = 0; % centre de masse sur y par rapport au centre
 
-y_CGcentre = 0; % centre de masse sur y par rapport au centre
+% distance des supports/du balourd au CG
 
-z_support1CG = -(z_CG - z_sup1); % position du support 1 par rapport au CG
-
-z_support2CG = z_sup2 - z_CG; % position du support 2 par rapport au CG
-
-z_balourdCG = z_CGcentre + L_a/2;
-
-k_lx = E_l*L_l*h_l/t_l;
-
-k_lz = E_l*L_l*t_l/h_l;
+    z_support1CG = -(z_CG - z_sup1); % position du support 1 par rapport au CG
+    z_support2CG = z_sup2 - z_CG; % position du support 2 par rapport au CG
+    z_balourdCG = z_CGcentre + L_a/2;
 
 % Moment d'inertie z rotor:
 
@@ -47,20 +45,27 @@ k_lz = E_l*L_l*t_l/h_l;
     J_y2 = J_y2cg + m_r1*(z_CG - L_r/2)^2;
     J_y3 = J_y3cg + m_a*(z_CG - L_r/2)^2;
 
-    J_ry = J_y1 + J_y2 + J_y3 % Inertie totale du rotor autour de y
+    J_ry = J_y1 + J_y2 + J_y3; % Inertie totale du rotor autour de y
 
+% calcul des rigidités de la courroie
 
-k_c1 = E_c * h_c * t_c / l_c1;
-k_c2 = E_c * h_c * t_c / l_c2;
-k_c3 = E_c * h_c * t_c / l_c3;
-k_c4 = E_c * h_c * t_c / l_c4;
-k_c5 = E_c * h_c * t_c / l_c5;
-k_c6 = E_c * h_c * t_c / l_c6;
-k_c7 = E_c * h_c * t_c / l_c7;
+    k_c1 = E_c * h_c * t_c / l_c1;
+    k_c2 = E_c * h_c * t_c / l_c2;
+    k_c3 = E_c * h_c * t_c / l_c3;
+    k_c4 = E_c * h_c * t_c / l_c4;
+    k_c5 = E_c * h_c * t_c / l_c5;
+    k_c6 = E_c * h_c * t_c / l_c6;
+    k_c7 = E_c * h_c * t_c / l_c7;
 
+% Inerties et rigidités des lames
 
-I_lx=t_l*(h_l^3)/12;
-I_lz=h_l*(t_l^3)/12;
-kl_x = 12*E_l*I_lz/L_l^3
-kl_z = 12*E_l*I_lx/L_l^3
-    
+    I_lx=t_l*(h_l^3)/12;
+    I_lz=h_l*(t_l^3)/12;
+
+    % on garde quels calculs???
+    kl_x = 12*E_l*I_lz/L_l^3;
+    kl_z = 12*E_l*I_lx/L_l^3;
+
+    k_lx = E_l*L_l*h_l/t_l;
+    k_lz = E_l*L_l*t_l/h_l;
+
