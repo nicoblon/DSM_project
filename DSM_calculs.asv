@@ -108,7 +108,7 @@ DSM_constants;
     b_r = T_resNulle;
     a_r = (T_resMax - b_r) / w_rs;
 
-% Couple résistant rotor réduit
+% Couple rotor réduit
 
     %Coeff. b couple rotor réduit
     b_r_red = T_resNulle/i_mr;
@@ -129,6 +129,10 @@ DSM_constants;
 
     %Coeff. a couple moteur
 
+    
+
+
+
 % Rigidités courroie réduites
     
     k_c1_red = k_c1 / i_mc^2;
@@ -145,4 +149,4 @@ DSM_constants;
     % raideur système
     k_sys_red = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red+1/k_c6_red+1/k_c7_red);
 
-    w_m0min = 30 / pi * sqrt(k_sys_red/J_z_red)
+    w_m0min = 30 / pi * sqrt(k_sys_red/J_sys_red);
