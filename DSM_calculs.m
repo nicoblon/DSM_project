@@ -96,8 +96,10 @@ DSM_constants;
     
     % Moment d'inertie réduit moteur
     J_mz_red = J_mz;
+
     % Moment d'inertie réduit poulie
     J_pz_red = J_pz/(i_mp)^2;
+
     % Moment d'inertie réduit rotor
     J_rz_red = J_rz/(i_mr)^2;
 
@@ -117,3 +119,7 @@ DSM_constants;
     %Coeff. a couple moteur
     
 
+% Couple résistant rotor
+
+    b_r = T_resNulle;
+    a_r = (T_resMax - b_r) / w_rs;
