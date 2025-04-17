@@ -10,6 +10,7 @@ L_a = 45 / 1000;
 
 % Rotor
 D_i = 1.5 / 1000;
+w_rs = 12000; % rpm
 
 % Position des supports
 z_sup1 = 0.1 * L_r;
