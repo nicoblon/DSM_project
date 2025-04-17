@@ -62,10 +62,5 @@ DSM_constants;
     I_lx=t_l*(h_l^3)/12;
     I_lz=h_l*(t_l^3)/12;
 
-    % on garde quels calculs???
     kl_x = 12*E_l*I_lz/L_l^3;
     kl_z = 12*E_l*I_lx/L_l^3;
-
-    k_lx = E_l*L_l*h_l/t_l;
-    k_lz = E_l*L_l*t_l/h_l;
-
