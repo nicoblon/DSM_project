@@ -118,7 +118,6 @@ DSM_constants;
     b_m = Tm 
     %Coeff. a couple moteur
     
-    
 % Couple résistant rotor
 
     b_r = T_resNulle;
