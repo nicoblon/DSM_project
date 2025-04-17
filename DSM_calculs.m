@@ -115,7 +115,7 @@ DSM_constants;
     %Couple moteur
     Tm = a_r_red*w_ms + b_r_red;
     %Coeff. b couple moteur
-    b_m = Tm 
+    b_m = Tm;
     %Coeff. a couple moteur
     
 % Couple résistant rotor
