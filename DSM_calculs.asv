@@ -128,4 +128,4 @@ DSM_constants;
     % raideur système
     k_sys_red = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red+1/k_c6_red+1/k_c7_red);
 
-    w_m0min = 30 / pi * sqrt(k_sys_red/J_sys_red);
+    
