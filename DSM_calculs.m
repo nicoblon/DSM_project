@@ -91,3 +91,8 @@ DSM_constants;
 % Vitesse stationnaire du moteur
     
     w_ms = w_rs * i_mr;
+
+% Moments d'inertie réduits
+    
+    % Moment d'inertie réduit moteur
+    J_mz_red = J_mz;
