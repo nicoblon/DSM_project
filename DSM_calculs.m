@@ -64,3 +64,5 @@ DSM_constants;
 
     kl_x = 12*E_l*I_lz/L_l^3;
     kl_z = 12*E_l*I_lx/L_l^3;
+
+
