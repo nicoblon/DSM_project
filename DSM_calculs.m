@@ -104,7 +104,22 @@ DSM_constants;
     J_rz_red = J_rz/(i_mr)^2;
 
 
-% Couple résistant rotor
+    %Coeff. b couple rotor réduit
+    b_r_red = T_resNulle/i_mr;
+    %Coeff. a couple roto réduit
+    a_r_red = (T_resMax/i_mr - b_r_red)/w_ms;
+
+    %Moment d'inertie réduit du système entraînement (globle)
+    J_z_red = J_mz_red + 5*J_pz_red + J_rz_red;
+
+    %Couple moteur
+    Tm = a_r_red*w_ms + b_r_red;
+    %Coeff. b couple moteur
+    b_m = Tm 
+    %Coeff. a couple moteur
     
+
+% Couple résistant rotor
+
     b_r = T_resNulle;
     a_r = (T_resMax - b_r) / w_rs;
