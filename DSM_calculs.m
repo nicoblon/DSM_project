@@ -72,11 +72,11 @@ DSM_constants;
 
     % Rapport de transmission moteur-courroie
 
-    i_mc = 1 / D_m;
+    i_mc = 1 / (D_m / 2);
 
     % Rapport de transmission courroie-poulie
 
-    i_cp = D_p;
+    i_cp = D_p / 2;
 
     % Rapport de transmission moteur-poulie
 
@@ -103,20 +103,27 @@ DSM_constants;
     % Moment d'inertie réduit rotor
     J_rz_red = J_rz/(i_mr)^2;
 
+% Couple rotor réduit
 
     %Coeff. b couple rotor réduit
     b_r_red = T_resNulle/i_mr;
+
     %Coeff. a couple roto réduit
     a_r_red = (T_resMax/i_mr - b_r_red)/w_ms;
 
-    %Moment d'inertie réduit du système entraînement (globle)
+%Moment d'inertie réduit du système entraînement (global)
+
     J_z_red = J_mz_red + 5*J_pz_red + J_rz_red;
 
-    %Couple moteur
+%Couple moteur
+
     Tm = a_r_red*w_ms + b_r_red;
+
     %Coeff. b couple moteur
-    b_m = Tm 
+    b_m = Tm;
+
     %Coeff. a couple moteur
+
     
 
 % Couple résistant rotor
