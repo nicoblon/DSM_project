@@ -72,11 +72,11 @@ DSM_constants;
 
     % Rapport de transmission moteur-courroie
 
-    i_mc = 1 / D_m;
+    i_mc = 1 / (D_m / 2);
 
     % Rapport de transmission courroie-poulie
 
-    i_cp = D_p;
+    i_cp = D_p / 2;
 
     % Rapport de transmission moteur-poulie
 
@@ -103,23 +103,51 @@ DSM_constants;
     % Moment d'inertie réduit rotor
     J_rz_red = J_rz/(i_mr)^2;
 
+% Couple rotor réduit
 
     %Coeff. b couple rotor réduit
     b_r_red = T_resNulle/i_mr;
+
     %Coeff. a couple roto réduit
     a_r_red = (T_resMax/i_mr - b_r_red)/w_ms;
 
-    %Moment d'inertie réduit du système entraînement (globle)
+%Moment d'inertie réduit du système entraînement (global)
+
     J_z_red = J_mz_red + 5*J_pz_red + J_rz_red;
 
-    %Couple moteur
+%Couple moteur
+
     Tm = a_r_red*w_ms + b_r_red;
+
     %Coeff. b couple moteur
-    b_m = Tm 
+    b_m = Tm;
+
     %Coeff. a couple moteur
+
     
 
 % Couple résistant rotor
 
     b_r = T_resNulle;
     a_r = (T_resMax - b_r) / w_rs;
+
+
+
+
+% Rigidités courroie réduites
+    
+    k_c1_red = k_c1 / i_mc^2;
+    k_c2_red = k_c2 / i_mc^2;
+    k_c3_red = k_c3 / i_mc^2;
+    k_c4_red = k_c4 / i_mc^2;
+    k_c5_red = k_c5 / i_mc^2;
+    k_c6_red = k_c6 / i_mc^2;
+    k_c7_red = k_c7 / i_mc^2;
+
+
+% Vitesse critique
+
+    % raideur système
+    k_sys_red = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red+1/k_c6_red+1/k_c7_red);
+
+    w_m0min = 30 / pi * sqrt(k_sys_red/J_sys_red);
