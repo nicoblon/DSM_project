@@ -66,3 +66,29 @@ DSM_constants;
     kl_z = 12*E_l*I_lx/L_l^3;
 
 
+
+
+% Rapports de transmission
+
+    % Rapport de transmission moteur-courroie
+
+    i_mc = 1 / D_m;
+
+    % Rapport de transmission courroie-poulie
+
+    i_cp = D_p;
+
+    % Rapport de transmission moteur-poulie
+
+    i_mp = i_mc * i_cp;
+    % i_mp = D_p / D_m;
+
+    % Rapport de transmission moteur-rotor
+
+    i_mr = D_r / D_m;
+    % i_mr2 = i_mc * D_r
+
+% Vitesse stationnaire du moteur
+    
+    w_ms = w_rs * i_mr;
+    
