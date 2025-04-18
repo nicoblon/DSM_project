@@ -128,6 +128,14 @@ DSM_constants;
     b_m = Tm;
 
     %Coeff. a couple moteur
+    a_m = 0;
+
+    %Coeff. a couple système d'entraînement (globale)
+    a_red = a_r_red + a_m
+
+    %Coeff. b couple système d'entraînement (globale)
+    b_red = b_r_red + b_r
+
 
 % Rigidités courroie réduites
     
