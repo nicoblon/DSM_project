@@ -131,12 +131,27 @@ DSM_constants;
     a_m = 0;
 
     %Coeff. a couple système d'entraînement (globale)
-    a_red = a_r_red + a_m
+    a_red = -a_r_red + a_m
 
-    %Coeff. b couple système d'entraînement (globale)
-    b_red 
+    %Coeff. b couple système d'entraînement (globale)(couple système
+    %d'entraînement = couple moteur - couple rotot (résistant)
+    b_red = -b_r_red + b_m
 
+% Temps de démaragge système d'entraînement
 
+t_d_99 = J_z_red/a_red*log(0.99*a_red/b_red*w_ms+1)
+
+%Courbe de d'accélération
+t=linspace(0,t_d_99,100);
+
+w_m = a_red/b_red*(exp(a_red/J_z_red*t)-1);
+
+%accélération groupe d'entraînement
+a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
+figure(1)
+plot(t,w_m)
+figure(2)
+plot(t,a_m)
 % Rigidités courroie réduites
     
     k_c1_red = k_c1 / i_mc^2;
