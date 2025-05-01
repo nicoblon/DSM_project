@@ -116,8 +116,8 @@ DSM_constants;
     %Coeff. b couple rotor réduit
     b_r_red = T_resNulle/i_mr;
 
-    %Coeff. a couple roto réduit
-    a_r_red = (T_resMax - b_r_red)/(i_mr* w_rs2);
+    %Coeff. a couple rotor réduit
+    a_r_red = (T_resMax/i_mr - b_r_red)/w_ms;
 
 %Moment d'inertie réduit du système entraînement (global)
 
