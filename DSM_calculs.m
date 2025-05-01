@@ -151,13 +151,13 @@ w_m = b_red/a_red*(exp(a_red/J_z_red*t)-1);
 
 %accélération groupe d'entraînement
 a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
-figure(1)
-plot(t,w_m)
-figure(2)
-plot(t,a_m)
-title('Courbe d%accélération du groupe')
-xlabel('Temps [s]') 
-ylabel('Accélération angulaire [tours/s^2]') 
+%figure(1)
+%plot(t,w_m)
+%figure(2)
+%plot(t,a_m)
+%title('Courbe d%accélération du groupe')
+%xlabel('Temps [s]') 
+%ylabel('Accélération angulaire [tours/s^2]') 
 % Rigidités courroie réduites
     
     k_c1_red = k_c1 / i_mc^2;
@@ -182,9 +182,13 @@ ylabel('Accélération angulaire [tours/s^2]')
     % [M](d^2/dt^2)theta + [K]theta = Q*
 
     M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red])
+    %Raideur equivalente pour schéma du modèle dynamique réduit et simplifié
 
 
 
 
 
 
+K_equivalent1 = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red);
+K_equivalent2 = (k_c7_red*k_c6_red)/(k_c7_red+k_c6_red);
+K_c_tot_red = K_equivalent1+K_equivalent2;
