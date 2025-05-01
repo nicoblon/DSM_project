@@ -90,7 +90,8 @@ DSM_constants;
 
 % Vitesse stationnaire du moteur
     
-    w_ms = w_rs * i_mr;
+    w_rs2 = w_rs * 2*pi/60;
+    w_ms = w_rs2 * i_mr;%rad/s
 
 % Moments d'inertie réduits
     
@@ -106,14 +107,14 @@ DSM_constants;
 % Couple résistant rotor
 
     b_r = T_resNulle;
-    a_r = (T_resMax - b_r) / (w_rs * (60/2*pi));
+    a_r = (T_resMax - b_r) / w_rs2;
 
 % Couple résistant rotor réduit
 
     %Coeff. b couple rotor réduit
     b_r_red = T_resNulle/i_mr;
 
-    %Coeff. a couple roto réduit
+    %Coeff. a couple rotor réduit
     a_r_red = (T_resMax/i_mr - b_r_red)/w_ms;
 
 %Moment d'inertie réduit du système entraînement (global)
@@ -179,6 +180,7 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
     % [M](d^2/dt^2)theta + [K]theta = Q*
 
     M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red])
+    %Raideur equivalente pour schéma du modèle dynamique réduit et simplifié
     K = (D_m/2)^2 * [k_c1_red+k_c7_red,0,-k_c1_red,0,0,0,-k_c7_red
                      0,k_c6_red+k_c5_red,0,0,0,-k_c5_red,-k_c6_red
                      -k_c1_red,0,k_c2_red+k_c1_red,-k_c2_red,0,0,0
@@ -195,3 +197,6 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
 
 
 
+K_equivalent1 = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red);
+K_equivalent2 = (k_c7_red*k_c6_red)/(k_c7_red+k_c6_red);
+K_c_tot_red = K_equivalent1+K_equivalent2;

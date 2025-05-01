@@ -90,7 +90,10 @@ DSM_constants;
 
 % Vitesse stationnaire du moteur
     
-    w_ms = w_rs * i_mr;
+    w_rs2 = w_rs * 2*pi/60;
+    w_ms = w_rs2 * i_mr;%rad/s
+
+   
 
 % Moments d'inertie réduits
     
@@ -106,15 +109,19 @@ DSM_constants;
 % Couple résistant rotor
 
     b_r = T_resNulle;
+<<<<<<< HEAD
     a_r = (T_resMax - b_r) / (w_rs * (60/2*pi));
+=======
+    a_r = (T_resMax - b_r) / w_rs2;
+>>>>>>> 24417bb51b28c11b888e0c60899e0e3662694dbe
 
 % Couple résistant rotor réduit
 
     %Coeff. b couple rotor réduit
     b_r_red = T_resNulle/i_mr;
 
-    %Coeff. a couple roto réduit
-    a_r_red = (T_resMax/i_mr - b_r_red)/w_ms;
+    %Coeff. a couple rotor réduit
+    a_r_red = (T_resMax - b_r_red)/(i_mr* w_rs2);
 
 %Moment d'inertie réduit du système entraînement (global)
 
@@ -148,6 +155,7 @@ w_m = b_red/a_red*(exp(a_red/J_z_red*t)-1);
 
 %accélération groupe d'entraînement
 a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
+<<<<<<< HEAD
 %figure(1)
 %plot(t,w_m)
 %figure(2)
@@ -155,6 +163,15 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
 %title('Courbe d%accélération du groupe')
 %xlabel('Temps [s]') 
 %ylabel('Accélération angulaire [tours/s^2]') 
+=======
+figure(1)
+plot(t,w_m)
+figure(2)
+plot(t,a_m)
+title('Courbe d%accélération du groupe')
+xlabel('Temps [s]') 
+ylabel('Accélération angulaire [tours/s^2]') 
+>>>>>>> 24417bb51b28c11b888e0c60899e0e3662694dbe
 % Rigidités courroie réduites
     
     k_c1_red = k_c1 / i_mc^2;
@@ -179,6 +196,7 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
     % [M](d^2/dt^2)theta + [K]theta = Q*
 
     M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red])
+<<<<<<< HEAD
     K = (D_m/2)^2 * [k_c1_red+k_c7_red,- k_c1_red,0,0,0,0,-k_c7_red
                      0,k_c6_red+k_c5_red,0,0,0,-k_c5_red,-k_c6_red
                      -k_c1_red,0,k_c2_red+k_c1_red,-k_c2_red,0,0,0
@@ -186,6 +204,8 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
                      0,0,0,1,1,1,0
                      0,1,0,0,1,1,0
                      1,1,0,0,0,0,1]
+=======
+>>>>>>> 24417bb51b28c11b888e0c60899e0e3662694dbe
 
 
 
