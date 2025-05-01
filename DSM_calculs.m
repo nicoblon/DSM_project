@@ -179,6 +179,16 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
     % [M](d^2/dt^2)theta + [K]theta = Q*
 
     M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red])
+    K = (D_m/2)^2 * [k_c1_red+k_c7_red,0,-k_c1_red,0,0,0,-k_c7_red
+                     0,k_c6_red+k_c5_red,0,0,0,-k_c5_red,-k_c6_red
+                     -k_c1_red,0,k_c2_red+k_c1_red,-k_c2_red,0,0,0
+                     0,0,-k_c2_red,k_c3_red+k_c2_red,-k_c3_red,0,0
+                     0,0,0,-k_c3_red,k_c4_red+k_c3_red,-k_c4_red,0
+                     0,-k_c5_red,0,0,-k_c4_red,k_c5_red+k_c4_red,0
+                     -k_c7_red,-k_c6_red,0,0,0,0,k_c7_red+k_c6_red]
+    N = inv(M)*K
+
+    eigenvalues = eig(N)
 
 
 
