@@ -131,20 +131,20 @@ DSM_constants;
     a_m = 0;
 
     %Coeff. a couple système d'entraînement (globale)
-    a_red = -a_r_red + a_m
+    a_red = -a_r_red + a_m;
 
     %Coeff. b couple système d'entraînement (globale)(couple système
     %d'entraînement = couple moteur - couple rotot (résistant)
-    b_red = -b_r_red + b_m
+    b_red = -b_r_red + b_m;
 
 % Temps de démaragge système d'entraînement
 
-t_d_99 = J_z_red/a_red*log(0.99*a_red/b_red*w_ms+1)
+t_d_99 = J_z_red/a_red*log(0.99*a_red/b_red*w_ms+1);
 
 %Courbe de d'accélération
 t=linspace(0,t_d_99,100);
 
-w_m = a_red/b_red*(exp(a_red/J_z_red*t)-1);
+w_m = b_red/a_red*(exp(a_red/J_z_red*t)-1);
 
 %accélération groupe d'entraînement
 a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
@@ -152,6 +152,9 @@ figure(1)
 plot(t,w_m)
 figure(2)
 plot(t,a_m)
+title('Courbe d’accélération du groupe')
+xlabel('Temps [s]') 
+ylabel('Accélération angulaire [tours/s^2]') 
 % Rigidités courroie réduites
     
     k_c1_red = k_c1 / i_mc^2;
@@ -169,3 +172,9 @@ plot(t,a_m)
     k_sys_red = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red+1/k_c6_red+1/k_c7_red);
 
     w_m0min = 30 / pi * sqrt(k_sys_red/J_z_red)
+
+
+%Raideur equivalente pour schéma du modèle dynamique réduit et simplifié
+
+K_equivalent1 = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red)
+K_equivalent2 = 1

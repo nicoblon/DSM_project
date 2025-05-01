@@ -171,4 +171,15 @@ ylabel('Accélération angulaire [tours/s^2]')
     % raideur système
     k_sys_red = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red+1/k_c6_red+1/k_c7_red);
 
-    w_m0min = 30 / pi * sqrt(k_sys_red/J_z_red)
+    w_m0min = 30 / pi * sqrt(k_sys_red/J_z_red);
+
+
+%Raideur equivalente pour schéma du modèle dynamique réduit et simplifié
+
+K_equivalent1 = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red);
+K_equivalent2 = (k_c7_red*k_c6_red)/(k_c7_red+k_c6_red);
+K_c_tot_red = K_equivalent1+K_equivalent2;
+
+
+
+
