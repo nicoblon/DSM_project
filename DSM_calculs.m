@@ -35,10 +35,10 @@ DSM_constants;
     % formule pour un cylindre creux autour de leur centre de gravité: 
     % J_y = J_x = (1/12)*M*(3*R_i + 3*R_e + l^2)
 
-    J_y1cg = (1/12)*m_r2*(3*D_r/2 + 3*D_i/2 + (L_r - L_a)^2);
-    J_y2cg = (1/12)*m_r1*(3*D_r/2 + 3*D_a/2 + L_a^2);
-    J_y3cg = (1/12)*m_a*(3*D_a/2 + 3*D_i/2 + L_a^2);
-
+    J_y1cg = (1/12)*m_r2*(3*(D_r/2)^2 + 3*(D_i/2)^2 + (L_r - L_a)^2);
+    J_y2cg = (1/12)*m_r1*(3*(D_r/2)^2 + 3*(D_a/2)^2 + L_a^2);
+    J_y3cg = (1/12)*m_a*(3*(D_a/2)^2 + 3*(D_i/2)^2 + L_a^2);
+ 
     % calcul des inertie au centre de masse du rotor:
 
     J_y1 = J_y1cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2;
@@ -106,7 +106,7 @@ DSM_constants;
 % Couple résistant rotor
 
     b_r = T_resNulle;
-    a_r = (T_resMax - b_r) / w_rs;
+    a_r = (T_resMax - b_r) / (w_rs * (60/2*pi));
 
 % Couple résistant rotor réduit
 
@@ -148,13 +148,13 @@ w_m = b_red/a_red*(exp(a_red/J_z_red*t)-1);
 
 %accélération groupe d'entraînement
 a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
-figure(1)
-plot(t,w_m)
-figure(2)
-plot(t,a_m)
-title('Courbe d’accélération du groupe')
-xlabel('Temps [s]') 
-ylabel('Accélération angulaire [tours/s^2]') 
+%figure(1)
+%plot(t,w_m)
+%figure(2)
+%plot(t,a_m)
+%title('Courbe d%accélération du groupe')
+%xlabel('Temps [s]') 
+%ylabel('Accélération angulaire [tours/s^2]') 
 % Rigidités courroie réduites
     
     k_c1_red = k_c1 / i_mc^2;
@@ -169,6 +169,19 @@ ylabel('Accélération angulaire [tours/s^2]')
 % Vitesse critique
 
     % raideur système
-    k_sys_red = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red+1/k_c6_red+1/k_c7_red);
+    %k_sys_red = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red+1/k_c6_red+1/k_c7_red);
 
-    w_m0min = 30 / pi * sqrt(k_sys_red/J_z_red)
+    %w_m0min = 30 / pi * sqrt(k_sys_red/J_z_red)
+   
+% Vitesse critique minimale
+
+    % équations de mouvement des 7 masses
+    % [M](d^2/dt^2)theta + [K]theta = Q*
+
+    M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red])
+
+
+
+
+
+
