@@ -148,6 +148,7 @@ w_m = b_red/a_red*(exp(a_red/J_z_red*t)-1);
 
 %accélération groupe d'entraînement
 a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
+
 %figure(1)
 %plot(t,w_m)
 %figure(2)
@@ -155,6 +156,7 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
 %title('Courbe d%accélération du groupe')
 %xlabel('Temps [s]') 
 %ylabel('Accélération angulaire [tours/s^2]') 
+
 % Rigidités courroie réduites
     
     k_c1_red = k_c1 / i_mc^2;
@@ -164,6 +166,7 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
     k_c5_red = k_c5 / i_mc^2;
     k_c6_red = k_c6 / i_mc^2;
     k_c7_red = k_c7 / i_mc^2;
+
 
 
 % Vitesse critique
@@ -184,7 +187,3 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
 K_equivalent1 = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red);
 K_equivalent2 = (k_c7_red*k_c6_red)/(k_c7_red+k_c6_red);
 K_c_tot_red = K_equivalent1+K_equivalent2;
-
-
-
-
