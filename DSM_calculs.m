@@ -41,7 +41,7 @@ DSM_constants;
  
     % calcul des inertie au centre de masse du rotor:
 
-    J_y1 = J_y1cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2;
+    J_y1 = J_y1cg + m_r2*(L_a/2 + L_r/2 - z_CG)^2;
     J_y2 = J_y2cg + m_r1*(z_CG - L_r/2)^2;
     J_y3 = J_y3cg + m_a*(z_CG - L_r/2)^2;
 
