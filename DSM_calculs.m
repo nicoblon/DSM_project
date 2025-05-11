@@ -188,7 +188,8 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
                      0, 0, 0, -k_c3_red, k_c4_red+k_c3_red, -k_c4_red, 0
                      0, -k_c5_red, 0, 0, -k_c4_red, k_c5_red+k_c4_red, 0
                      -k_c7_red, -k_c6_red, 0, 0, 0, 0, k_c7_red+k_c6_red]
-    N = inv(M)*K
+    
+    N = (inv(M)*K)
 
     [V,D] = eig(N)
 
