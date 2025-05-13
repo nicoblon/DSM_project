@@ -206,6 +206,6 @@ K_c_tot_red = K_equivalent1+K_equivalent2;
 m_BalourdMin = D_r/2 * m_r *0.00001;
 m_BalourdMax = D_r/2 * m_r * 0.001;
 
-
+w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red))
 
 
