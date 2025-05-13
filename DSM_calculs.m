@@ -208,4 +208,21 @@ m_BalourdMax = D_r/2 * m_r * 0.001;
 
 
 
+syms x(t) M K
+
+% Define derivatives
+Dx = diff(x, t);
+D2x = diff(x, t, 2);
+
+% Define the differential equation
+eqn = M*D2x + Kar*x == 0;
+
+% Solve the equation symbolically
+sol = dsolve(eqn);
+
+% Simplify the solution
+xSol = simplify(sol)
+
+
+
 
