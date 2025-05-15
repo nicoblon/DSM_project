@@ -6,7 +6,7 @@ DSM_constants;
 
 % masse totale du système
 
-    m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*(L_r-L_a)/4 - pi*D_a*D_a*L_a/4)*rho_r + (pi*D_a*D_a*L_a/4- pi*D_i*D_i*L_a/4)*rho_a; % masse totale
+    m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*L_r/4 - pi*D_a*D_a*L_a/4)*rho_r + (pi*D_a*D_a*L_a/4- pi*D_i*D_i*L_a/4)*rho_a; % masse totale
 
 % masses des différents composants
 
@@ -14,10 +14,9 @@ DSM_constants;
     m_r1 = pi*(D_r*D_r - D_a*D_a)/4*L_a*rho_r; % masse autour aimant
     m_r2 = pi*(D_r*D_r - D_i*D_i)/4*(L_r - L_a) * rho_r; % reste de la masse
 
-    
-    % position du centre de gravité
+% position du centre de gravité
 
-    z_CG = (m_a*L_a/2 + m_r1*L_a/2 + m_r2*(3*L_r/4))/m_r ; % depuis le point le plus à gauche
+    z_CG = (m_a*L_a/2 + m_r1*L_a/2 + m_r2*(3*L_r/4))/m_r; % depuis le point le plus à gauche
     z_CGcentre = z_CG - L_r/2; % centre de masse sur z par rapport au centre
     y_CGcentre = 0; % centre de masse sur y par rapport au centre
 
@@ -36,15 +35,15 @@ DSM_constants;
     % formule pour un cylindre creux autour de leur centre de gravité: 
     % J_y = J_x = (1/12)*M*(3*R_i + 3*R_e + l^2)
 
-    J_y1cg = (1/12)*m_r1*(3*(D_r/2)^2 + 3*(D_a/2)^2 + L_a^2);
-    J_y2cg = (1/12)*m_r2*(3*(D_r/2)^2 + 3*(D_i/2)^2 + (L_r - L_a)^2);
+    J_y1cg = (1/12)*m_r2*(3*(D_r/2)^2 + 3*(D_i/2)^2 + (L_r - L_a)^2);
+    J_y2cg = (1/12)*m_r1*(3*(D_r/2)^2 + 3*(D_a/2)^2 + L_a^2);
     J_y3cg = (1/12)*m_a*(3*(D_a/2)^2 + 3*(D_i/2)^2 + L_a^2);
  
     % calcul des inertie au centre de masse du rotor:
 
-    J_y1 = J_y1cg + m_r1*(z_CG - L_a/2)^2;
-    J_y2 = J_y2cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2; 
-    J_y3 = J_y3cg + m_a*(z_CG - L_a/2)^2;
+    J_y1 = J_y1cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2; %pk J_y1 avec m_r2??
+    J_y2 = J_y2cg + m_r1*(z_CG - L_r/2)^2;
+    J_y3 = J_y3cg + m_a*(z_CG - L_r/2)^2;
 
     J_ry = J_y1 + J_y2 + J_y3; % Inertie totale du rotor autour de y
 
@@ -182,15 +181,14 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
 
     M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red])
     %Raideur equivalente pour schéma du modèle dynamique réduit et simplifié
-    K = [k_c1_red+k_c7_red, 0, -k_c1_red, 0, 0, 0, -k_c7_red
+    K = (D_m/2)^2 * [k_c1_red+k_c7_red, 0, -k_c1_red, 0, 0, 0, -k_c7_red
                      0, k_c6_red+k_c5_red, 0,0, 0, -k_c5_red, -k_c6_red
                      -k_c1_red, 0, k_c2_red+k_c1_red, -k_c2_red, 0, 0, 0
                      0, 0, -k_c2_red, k_c3_red+k_c2_red, -k_c3_red, 0, 0
                      0, 0, 0, -k_c3_red, k_c4_red+k_c3_red, -k_c4_red, 0
                      0, -k_c5_red, 0, 0, -k_c4_red, k_c5_red+k_c4_red, 0
                      -k_c7_red, -k_c6_red, 0, 0, 0, 0, k_c7_red+k_c6_red]
-    
-    N = (inv(M)*K)
+    N = inv(M)*K
 
     [V,D] = eig(N)
 
@@ -209,22 +207,5 @@ m_BalourdMin = D_r/2 * m_r *0.00001;
 m_BalourdMax = D_r/2 * m_r * 0.001;
 
 w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red))
-
-syms x(t) M K
-
-% Define derivatives
-Dx = diff(x, t);
-D2x = diff(x, t, 2);
-
-% Define the differential equation
-eqn = M*D2x + Kar*x == 0;
-
-% Solve the equation symbolically
-sol = dsolve(eqn);
-
-% Simplify the solution
-xSol = simplify(sol)
-
-
 
 
