@@ -181,7 +181,7 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
 
     M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red])
     %Raideur equivalente pour schéma du modèle dynamique réduit et simplifié
-    K = (D_m/2)^2 * [k_c1_red+k_c7_red, 0, -k_c1_red, 0, 0, 0, -k_c7_red
+    K = [k_c1_red+k_c7_red, 0, -k_c1_red, 0, 0, 0, -k_c7_red
                      0, k_c6_red+k_c5_red, 0,0, 0, -k_c5_red, -k_c6_red
                      -k_c1_red, 0, k_c2_red+k_c1_red, -k_c2_red, 0, 0, 0
                      0, 0, -k_c2_red, k_c3_red+k_c2_red, -k_c3_red, 0, 0
@@ -201,3 +201,12 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
 K_equivalent1 = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red);
 K_equivalent2 = (k_c7_red*k_c6_red)/(k_c7_red+k_c6_red);
 K_c_tot_red = K_equivalent1+K_equivalent2;
+
+%Plage du balourd
+
+m_BalourdMin = D_r/2 * m_r *0.00001;
+m_BalourdMax = D_r/2 * m_r * 0.001;
+
+
+
+
