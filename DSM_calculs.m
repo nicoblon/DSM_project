@@ -6,7 +6,7 @@ DSM_constants;
 
 % masse totale du système
 
-    m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*L_r/4 - pi*D_a*D_a*L_a/4)*rho_r + pi*D_a*D_a*L_a/4*rho_a; % masse totale
+    m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*(L_r-L_a)/4 - pi*D_a*D_a*L_a/4)*rho_r + (pi*D_a*D_a*L_a/4- pi*D_i*D_i*L_a/4)*rho_a; % masse totale
 
 % masses des différents composants
 
@@ -14,9 +14,10 @@ DSM_constants;
     m_r1 = pi*(D_r*D_r - D_a*D_a)/4*L_a*rho_r; % masse autour aimant
     m_r2 = pi*(D_r*D_r - D_i*D_i)/4*(L_r - L_a) * rho_r; % reste de la masse
 
+    
 % position du centre de gravité
 
-    z_CG = (m_a*L_a/2 + m_r1*L_a/2 + m_r2*(3*L_r/4))/m_r; % depuis le point le plus à gauche
+    z_CG = (m_a*L_a/2 + m_r1*L_a/2 + m_r2*(3*L_r/4))/m_r ; % depuis le point le plus à gauche
     z_CGcentre = z_CG - L_r/2; % centre de masse sur z par rapport au centre
     y_CGcentre = 0; % centre de masse sur y par rapport au centre
 
@@ -35,15 +36,15 @@ DSM_constants;
     % formule pour un cylindre creux autour de leur centre de gravité: 
     % J_y = J_x = (1/12)*M*(3*R_i + 3*R_e + l^2)
 
-    J_y1cg = (1/12)*m_r2*(3*(D_r/2)^2 + 3*(D_i/2)^2 + (L_r - L_a)^2);
-    J_y2cg = (1/12)*m_r1*(3*(D_r/2)^2 + 3*(D_a/2)^2 + L_a^2);
+    J_y2cg = (1/12)*m_r2*(3*(D_r/2)^2 + 3*(D_i/2)^2 + (L_r - L_a)^2);
+    J_y1cg = (1/12)*m_r1*(3*(D_r/2)^2 + 3*(D_a/2)^2 + L_a^2);
     J_y3cg = (1/12)*m_a*(3*(D_a/2)^2 + 3*(D_i/2)^2 + L_a^2);
  
     % calcul des inertie au centre de masse du rotor:
 
-    J_y1 = J_y1cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2;
-    J_y2 = J_y2cg + m_r1*(z_CG - L_r/2)^2;
-    J_y3 = J_y3cg + m_a*(z_CG - L_r/2)^2;
+    J_y1 = J_y1cg + m_r1*(z_CG - L_a/2)^2;
+    J_y2 = J_y2cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2; 
+    J_y3 = J_y3cg + m_a*(z_CG - L_a/2)^2;
 
     J_ry = J_y1 + J_y2 + J_y3; % Inertie totale du rotor autour de y
 

@@ -6,7 +6,7 @@ DSM_constants;
 
 % masse totale du système
 
-    m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*L_r/4 - pi*D_a*D_a*L_a/4)*rho_r + pi*D_a*D_a*L_a/4*rho_a; % masse totale
+    m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*L_r/4 - pi*D_a*D_a*L_a/4)*rho_r + (pi*D_a*D_a*L_a/4- pi*D_i*D_i*L_a/4)*rho_a; % masse totale
 
 % masses des différents composants
 
@@ -41,7 +41,7 @@ DSM_constants;
  
     % calcul des inertie au centre de masse du rotor:
 
-    J_y1 = J_y1cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2;
+    J_y1 = J_y1cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2; %pk J_y1 avec m_r2??
     J_y2 = J_y2cg + m_r1*(z_CG - L_r/2)^2;
     J_y3 = J_y3cg + m_a*(z_CG - L_r/2)^2;
 
@@ -201,8 +201,11 @@ K_equivalent1 = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red);
 K_equivalent2 = (k_c7_red*k_c6_red)/(k_c7_red+k_c6_red);
 K_c_tot_red = K_equivalent1+K_equivalent2;
 
-%
+%Plage du balourd
 
+m_BalourdMin = D_r/2 * m_r *0.00001;
+m_BalourdMax = D_r/2 * m_r * 0.001;
 
+w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red))
 
 
