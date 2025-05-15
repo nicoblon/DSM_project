@@ -66,9 +66,6 @@ DSM_constants;
     kl_x = 12*E_l*I_lz/L_l^3;
     kl_z = 12*E_l*I_lx/L_l^3;
 
-
-
-
 % Rapports de transmission
 
     % Rapport de transmission moteur-courroie
@@ -210,6 +207,8 @@ m_BalourdMax = D_r/2 * m_r * 0.001;
 
 w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red))
 
+plageBalourd = [m_BalourdMin, m_BalourdMax];
+
 syms x(t) M K
 
 % Define derivatives
@@ -217,7 +216,7 @@ Dx = diff(x, t);
 D2x = diff(x, t, 2);
 
 % Define the differential equation
-eqn = M*D2x + Kar*x == 0;
+eqn = M*D2x + K*x == 0;
 
 % Solve the equation symbolically
 sol = dsolve(eqn);
@@ -227,4 +226,7 @@ xSol = simplify(sol)
 
 
 
+for i = 0:0.001:100
+    find_ms(plageBalourd, etendue_mesure, m_r, z_CGcentre, J_rz_red, L_r, kl_x, i);
+end
 

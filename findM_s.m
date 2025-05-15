@@ -1,0 +1,25 @@
+function [m_s,boolWorks] = findM_s(plageBalourd, etendue_mesure, m_r, z_G, J_rz_red, L_r, k_l, m_s)
+%FINDM_S Summary of this function goes here
+%   Detailed explanation goes here
+
+    M = [(m_r + 2*m_s) (-2*m_s*z_G); (-3*m_s*z_G) (J_rz_red + 2*m_s*(L_r^2/4 + z_G^2))];
+
+    K = [2*k_l -4*k_l*z_G; -4*k_l*z_G 2*k_l*(L_r^2/4 + z_G^2)];
+
+    Fcentrifuge_min = plageBalourd(1)*omega^2;
+    Fcentrifuge_max = plageBalourd(2)*omega^2;
+
+    invertedMatrix = inv(K-omega^2*M);
+
+    x_0 = F_0 * invertedMatrix;
+
+    
+    
+    if(accel_max <= etendue_mesure(2) && accel_min >= etendue_mesure(1))
+        boolWorks = true;
+    else
+        boolWorks = false;
+    end
+
+end
+
