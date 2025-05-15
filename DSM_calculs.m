@@ -34,16 +34,16 @@ DSM_constants;
 
     % formule pour un cylindre creux autour de leur centre de gravité: 
     % J_y = J_x = (1/12)*M*(3*R_i + 3*R_e + l^2)
-
-    J_y1cg = (1/12)*m_r2*(3*(D_r/2)^2 + 3*(D_i/2)^2 + (L_r - L_a)^2);
-    J_y2cg = (1/12)*m_r1*(3*(D_r/2)^2 + 3*(D_a/2)^2 + L_a^2);
+    
+    J_y1cg = (1/12)*m_r1*(3*(D_r/2)^2 + 3*(D_a/2)^2 + L_a^2);
+    J_y2cg = (1/12)*m_r2*(3*(D_r/2)^2 + 3*(D_i/2)^2 + (L_r - L_a)^2);
     J_y3cg = (1/12)*m_a*(3*(D_a/2)^2 + 3*(D_i/2)^2 + L_a^2);
  
     % calcul des inertie au centre de masse du rotor:
-
-    J_y1 = J_y1cg + m_r2*(L_a/2 + L_r/2 - z_CG)^2;
-    J_y2 = J_y2cg + m_r1*(z_CG - L_r/2)^2;
-    J_y3 = J_y3cg + m_a*(z_CG - L_r/2)^2;
+    
+    J_y1 = J_y1cg + m_r1*(z_CG - L_a/2)^2;
+    J_y2 = J_y2cg + m_r2*(L_a/2 + L_r/2 - z_CG)^2;
+    J_y3 = J_y3cg + m_a*(z_CG - L_a/2)^2;
 
     J_ry = J_y1 + J_y2 + J_y3; % Inertie totale du rotor autour de y
 
