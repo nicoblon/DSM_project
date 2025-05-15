@@ -1,4 +1,4 @@
-     % Arbre
+% Arbre
 rho_r = 8000;
 D_r = 9 / 1000;
 L_r = 90 / 1000;
@@ -51,3 +51,4 @@ l_cArray = [l_c1 l_c2 l_c3 l_c4 l_c5 l_c6 l_c7];
 % Valeurs empiriques couple résistant rotor
 T_resNulle = 1.4 / 1000;
 T_resMax = 5.6 / 1000; 
+

@@ -182,14 +182,15 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
 
     M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red])
     %Raideur equivalente pour schéma du modèle dynamique réduit et simplifié
-    K = (D_m/2)^2 * [k_c1_red+k_c7_red, 0, -k_c1_red, 0, 0, 0, -k_c7_red
+    K = [k_c1_red+k_c7_red, 0, -k_c1_red, 0, 0, 0, -k_c7_red
                      0, k_c6_red+k_c5_red, 0,0, 0, -k_c5_red, -k_c6_red
                      -k_c1_red, 0, k_c2_red+k_c1_red, -k_c2_red, 0, 0, 0
                      0, 0, -k_c2_red, k_c3_red+k_c2_red, -k_c3_red, 0, 0
                      0, 0, 0, -k_c3_red, k_c4_red+k_c3_red, -k_c4_red, 0
                      0, -k_c5_red, 0, 0, -k_c4_red, k_c5_red+k_c4_red, 0
                      -k_c7_red, -k_c6_red, 0, 0, 0, 0, k_c7_red+k_c6_red]
-    N = inv(M)*K
+    
+    N = (inv(M)*K)
 
     [V,D] = eig(N)
 
@@ -208,5 +209,22 @@ m_BalourdMin = D_r/2 * m_r *0.00001;
 m_BalourdMax = D_r/2 * m_r * 0.001;
 
 w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red))
+
+syms x(t) M K
+
+% Define derivatives
+Dx = diff(x, t);
+D2x = diff(x, t, 2);
+
+% Define the differential equation
+eqn = M*D2x + Kar*x == 0;
+
+% Solve the equation symbolically
+sol = dsolve(eqn);
+
+% Simplify the solution
+xSol = simplify(sol)
+
+
 
 
