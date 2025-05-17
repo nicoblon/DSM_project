@@ -226,61 +226,68 @@ plageBalourd = [m_BalourdMin, m_BalourdMax];
 
 L_s1 = L_r/2 + z_CG;
 L_s2 = L_r - z_CG;
+% Assumes all required constants are already defined:
+% m_r, J_rz_red, L_s1, L_s2, kl_x, d, plageBalourd, etendue_mesure
 
-%for i = 0:0.001:100
-    %find_ms(plageBalourd, etendue_mesure, m_r, z_CGcentre, J_rz_red, L_r, kl_x, i);
-%end
-d = z_CG - L_a/2;
-ms = linspace(0,10,10000);
-omega = linspace(0,1257,1257);
-valid_ms_indices = []; % To store indices of valid ms
+d = z_CG - L_a/2;  % Already defined upstream
+
+ms = linspace(0,1, 1000);         % ms sweep
+omega = linspace(0, 1257, 1257);   % omega sweep
+
+valid_ms_indices = [];
 
 for i = 1:length(ms)
     m_s = ms(i);
-    isValid = true; % Assume it's valid unless proven otherwise
+    isValid = false;  % Initially assume ms is not valid
+
+    % Compute matrices M, K, D once for this ms
+    M = [(m_r + 2*m_s),           m_s*(L_s2 - L_s1);
+         m_s*(L_s2 - L_s1),       J_rz_red + m_s*(L_s1^2 + L_s2^2)];
+
+    K = [4*kl_x,                  2*kl_x*(L_s2 - L_s1);
+         2*kl_x*(L_s2 - L_s1),    2*kl_x*(L_s1^2 + L_s2^2)];
+
+    D = [1; d];
 
     for j = 1:length(omega)
         w = omega(j);
 
-        M = [(m_r + 2*m_s), m_s*(L_s2-L_s1);
-             m_s*(L_s2-L_s1), (J_rz_red + m_s*(L_s1^2 + L_s2^2))];
+        % Try to compute (K - w^2*M)⁻¹
+        try
+            invertedMatrix = (K - w^2 * M) \ eye(2);  % More stable than inv()
+        catch
+            continue;  % Skip this omega if matrix inversion fails
+        end
 
-        K = [4*kl_x, 2*kl_x*(L_s2 - L_s1);
-             2*kl_x*(L_s2 - L_s1), 2*kl_x*(L_s1^2 + L_s2^2)];
-
-        D = [1; d];
-
-        %try
-        invertedMatrix = inv(K - (w^2)*M);
-        %catch
-            %isValid = false;
-            %break; % Matrix is singular, skip this ms
-        %end
-
+        % Compute acceleration vectors
         accel_minVect = w^4 * plageBalourd(1) * (invertedMatrix * D);
         accel_maxVect = w^4 * plageBalourd(2) * (invertedMatrix * D);
 
+        % Extract components
         accel_min_x = accel_minVect(1);
         accel_max_x = accel_maxVect(1);
         accel_min_theta = accel_minVect(2);
         accel_max_theta = accel_maxVect(2);
 
-        if accel_max_x > etendue_mesure(2) || accel_min_x < etendue_mesure(1) || ...
-           accel_max_theta > etendue_mesure(2) || accel_min_theta < etendue_mesure(1)
-            isValid = false;
-            break;
+        % Check if within measurement range for this omega
+        if accel_max_x <= etendue_mesure(2) && accel_min_x >= etendue_mesure(1) && ...
+           accel_max_theta <= etendue_mesure(2) && accel_min_theta >= etendue_mesure(1)
+            isValid = true;
+            break;  % No need to check other omega values
         end
     end
 
     if isValid
-        valid_ms_indices(end+1) = i;
+        valid_ms_indices(end+1) = i;  % Store index of valid ms
     end
 end
 
-% Display the results
-disp('Valid ms indices:');
+% Display results
+disp('Valid m_s indices:');
 disp(valid_ms_indices);
-disp('Corresponding ms values:');
+
+disp('Corresponding m_s values:');
 disp(ms(valid_ms_indices));
+
 
     

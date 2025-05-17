@@ -226,47 +226,50 @@ plageBalourd = [m_BalourdMin, m_BalourdMax];
 
 L_s1 = L_r/2 + z_CG;
 L_s2 = L_r - z_CG;
-
+d = z_CG-L_a/2;
 %for i = 0:0.001:100
     %find_ms(plageBalourd, etendue_mesure, m_r, z_CGcentre, J_rz_red, L_r, kl_x, i);
 %end
-d = z_CG - L_a/2;
+
 ms = linspace(0,10,10000);
-omega = linspace(0,12000,12000);
-valid_ms_indices = []; % To store indices of valid ms
+omega = linspace(0,1257,1257);
+valid_ms_indices = [];
 
 for i = 1:length(ms)
     m_s = ms(i);
-    isValid = true; % Assume it's valid unless proven otherwise
+    isValid = true;
+    
+
+    % Compute M, K, D once per ms
+    M = [(m_r + 2*m_s), m_s*(L_s2-L_s1);
+         m_s*(L_s2-L_s1), (J_rz_red + m_s*(L_s1^2 + L_s2^2))];
+
+    K = [4*kl_x, 2*kl_x*(L_s2 - L_s1);
+         2*kl_x*(L_s2 - L_s1), 2*kl_x*(L_s1^2 + L_s2^2)];
+
+    D = [1; d];
 
     for j = 1:length(omega)
         w = omega(j);
 
-        M = [(m_r + 2*m_s), m_s*(L_s2-L_s1);
-             m_s*(L_s2-L_s1), (J_rz_red + 2*m_s*(L_s1^2 + L_s2^2))];
-
-        K = [4*kl_x, 2*kl_x*(L_s2 - L_s1);
-             2*kl_x*(L_s2 - L_s1), 2*kl_x*(L_s1^2 + L_s2^2)];
-
-        D = [1; d];
-
-        try
-            invertedMatrix = inv(K - w^2*M);
+        %try
+            % Use matrix division for stability
+            invertedMatrix = (K - w^2*M) \ eye(size(K))
         catch
             isValid = false;
-            break; % Matrix is singular, skip this ms
+            break;
         end
 
         accel_minVect = w^4 * plageBalourd(1) * (invertedMatrix * D);
         accel_maxVect = w^4 * plageBalourd(2) * (invertedMatrix * D);
 
-        accel_min_x = accel_minVect(1);
-        accel_max_x = accel_maxVect(1);
+        accel_min_x = accel_minVect(1)
+        accel_max_x = accel_maxVect(1)
         accel_min_theta = accel_minVect(2);
         accel_max_theta = accel_maxVect(2);
 
-        if accel_max_x > etendue_mesure(2) || accel_min_x < etendue_mesure(1) || ...
-           accel_max_theta > etendue_mesure(2) || accel_min_theta < etendue_mesure(1)
+        if accel_max_x > etendue_mesure(2) || accel_min_x < etendue_mesure(1)
+           %accel_max_theta > etendue_mesure(2) || accel_min_theta < etendue_mesure(1)
             isValid = false;
             break;
         end
@@ -277,7 +280,6 @@ for i = 1:length(ms)
     end
 end
 
-% Display the results
 disp('Valid ms indices:');
 disp(valid_ms_indices);
 disp('Corresponding ms values:');
