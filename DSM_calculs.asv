@@ -6,11 +6,7 @@ DSM_constants;
 
 % masse totale du système
 
-<<<<<<< HEAD
-    m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*L_r/4 - pi*D_a*D_a*L_a/4)*rho_r + (pi*D_a*D_a*L_a/4- pi*D_i*D_i*L_a/4)*rho_a; % masse totale
-=======
-    m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*L_r/4 - pi*D_a*D_a*L_a/4)*rho_r + pi*D_a*D_a*L_a/4*rho_a; % masse totale
->>>>>>> 7d1b788 (new file)
+    m_r = (pi*D_r*D_r*L_r/4 - pi*D_i*D_i*(L_r-L_a)/4 - pi*D_a*D_a*L_a/4)*rho_r + (pi*D_a*D_a*L_a/4- pi*D_i*D_i*L_a/4)*rho_a; % masse totale
 
 % masses des différents composants
 
@@ -18,9 +14,10 @@ DSM_constants;
     m_r1 = pi*(D_r*D_r - D_a*D_a)/4*L_a*rho_r; % masse autour aimant
     m_r2 = pi*(D_r*D_r - D_i*D_i)/4*(L_r - L_a) * rho_r; % reste de la masse
 
-% position du centre de gravité
+    
+    % position du centre de gravité
 
-    z_CG = (m_a*L_a/2 + m_r1*L_a/2 + m_r2*(3*L_r/4))/m_r; % depuis le point le plus à gauche
+    z_CG = (m_a*L_a/2 + m_r1*L_a/2 + m_r2*(3*L_r/4))/m_r ; % depuis le point le plus à gauche
     z_CGcentre = z_CG - L_r/2; % centre de masse sur z par rapport au centre
     y_CGcentre = 0; % centre de masse sur y par rapport au centre
 
@@ -39,19 +36,15 @@ DSM_constants;
     % formule pour un cylindre creux autour de leur centre de gravité: 
     % J_y = J_x = (1/12)*M*(3*R_i + 3*R_e + l^2)
 
-    J_y1cg = (1/12)*m_r2*(3*(D_r/2)^2 + 3*(D_i/2)^2 + (L_r - L_a)^2);
-    J_y2cg = (1/12)*m_r1*(3*(D_r/2)^2 + 3*(D_a/2)^2 + L_a^2);
+    J_y1cg = (1/12)*m_r1*(3*(D_r/2)^2 + 3*(D_a/2)^2 + L_a^2);
+    J_y2cg = (1/12)*m_r2*(3*(D_r/2)^2 + 3*(D_i/2)^2 + (L_r - L_a)^2);
     J_y3cg = (1/12)*m_a*(3*(D_a/2)^2 + 3*(D_i/2)^2 + L_a^2);
  
     % calcul des inertie au centre de masse du rotor:
 
-<<<<<<< HEAD
-    J_y1 = J_y1cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2; %pk J_y1 avec m_r2??
-=======
-    J_y1 = J_y1cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2;
->>>>>>> 7d1b788 (new file)
-    J_y2 = J_y2cg + m_r1*(z_CG - L_r/2)^2;
-    J_y3 = J_y3cg + m_a*(z_CG - L_r/2)^2;
+    J_y1 = J_y1cg + m_r1*(z_CG - L_a/2)^2;
+    J_y2 = J_y2cg + m_r2*(L_a/2 + 0.5*L_r - z_CG)^2; 
+    J_y3 = J_y3cg + m_a*(z_CG - L_a/2)^2;
 
     J_ry = J_y1 + J_y2 + J_y3; % Inertie totale du rotor autour de y
 
@@ -72,9 +65,6 @@ DSM_constants;
 
     kl_x = 12*E_l*I_lz/L_l^3;
     kl_z = 12*E_l*I_lx/L_l^3;
-
-
-
 
 % Rapports de transmission
 
@@ -189,23 +179,15 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
 
     M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red])
     %Raideur equivalente pour schéma du modèle dynamique réduit et simplifié
-<<<<<<< HEAD
-    K = (D_m/2)^2 * [k_c1_red+k_c7_red, 0, -k_c1_red, 0, 0, 0, -k_c7_red
-=======
     K = [k_c1_red+k_c7_red, 0, -k_c1_red, 0, 0, 0, -k_c7_red
->>>>>>> 7d1b788 (new file)
                      0, k_c6_red+k_c5_red, 0,0, 0, -k_c5_red, -k_c6_red
                      -k_c1_red, 0, k_c2_red+k_c1_red, -k_c2_red, 0, 0, 0
                      0, 0, -k_c2_red, k_c3_red+k_c2_red, -k_c3_red, 0, 0
                      0, 0, 0, -k_c3_red, k_c4_red+k_c3_red, -k_c4_red, 0
                      0, -k_c5_red, 0, 0, -k_c4_red, k_c5_red+k_c4_red, 0
                      -k_c7_red, -k_c6_red, 0, 0, 0, 0, k_c7_red+k_c6_red]
-<<<<<<< HEAD
-    N = inv(M)*K
-=======
     
     N = (inv(M)*K)
->>>>>>> 7d1b788 (new file)
 
     [V,D] = eig(N)
 
@@ -223,29 +205,82 @@ K_c_tot_red = K_equivalent1+K_equivalent2;
 m_BalourdMin = D_r/2 * m_r *0.00001;
 m_BalourdMax = D_r/2 * m_r * 0.001;
 
-<<<<<<< HEAD
 w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red))
 
+plageBalourd = [m_BalourdMin, m_BalourdMax];
 
-=======
-
-
-syms x(t) M K
+%syms x(t) M K
 
 % Define derivatives
-Dx = diff(x, t);
-D2x = diff(x, t, 2);
+%Dx = diff(x, t);
+%D2x = diff(x, t, 2);
 
 % Define the differential equation
-eqn = M*D2x + Kar*x == 0;
+%eqn = M*D2x + K*x == 0;
 
 % Solve the equation symbolically
-sol = dsolve(eqn);
+%sol = dsolve(eqn);
 
 % Simplify the solution
-xSol = simplify(sol)
+%xSol = simplify(sol)
 
+L_s1 = L_r/2 + z_CG;
+L_s2 = L_r - z_CG;
 
+%for i = 0:0.001:100
+    %find_ms(plageBalourd, etendue_mesure, m_r, z_CGcentre, J_rz_red, L_r, kl_x, i);
+%end
+d = z_CG - L_a/2;
+ms = linspace(0,10,10000);
+omega = linspace(0,12000,12000);
+valid_ms_indices = []; % To store indices of valid ms
 
-for i = 0:
->>>>>>> 7d1b788 (new file)
+for i = 1:length(ms)
+    m_s = ms(i);
+    isValid = true; % Assume it's valid unless proven otherwise
+
+    for j = 1:length(omega)
+        w = omega(j);
+
+        M = [(m_r + 2*m_s), m_s*(L_s2-L_s1);
+             m_s*(L_s2-L_s1), (J_rz_red + 2*m_s*(L_s1^2 + L_s2^2))];
+
+        K = [4*kl_x, 2*kl_x*(L_s2 - L_s1);
+             2*kl_x*(L_s2 - L_s1), 2*kl_x*(L_s1^2 + L_s2^2)];
+
+        D = [1; d];
+
+        try
+            invertedMatrix = inv(K - w^2*M);
+        catch
+            isValid = false;
+            break; % Matrix is singular, skip this ms
+        end
+
+        accel_minVect = w^4 * plageBalourd(1) * (invertedMatrix * D);
+        accel_maxVect = w^4 * plageBalourd(2) * (invertedMatrix * D);
+
+        accel_min_x = accel_minVect(1);
+        accel_max_x = accel_maxVect(1);
+        accel_min_theta = accel_minVect(2);
+        accel_max_theta = accel_maxVect(2);
+
+        if accel_max_x > etendue_mesure(2) || accel_min_x < etendue_mesure(1) || ...
+           accel_max_theta > etendue_mesure(2) || accel_min_theta < etendue_mesure(1)
+            isValid = false;
+            break;
+        end
+    end
+
+    if isValid
+        valid_ms_indices(end+1) = i;
+    end
+end
+
+% Display the results
+disp('Valid ms indices:');
+disp(valid_ms_indices);
+disp('Corresponding ms values:');
+disp(ms(valid_ms_indices));
+
+    
