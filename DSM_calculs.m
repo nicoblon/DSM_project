@@ -205,7 +205,7 @@ K_c_tot_red = K_equivalent1+K_equivalent2;
 m_BalourdMin = D_r/2 * m_r *0.00001;
 m_BalourdMax = D_r/2 * m_r * 0.001;
 
-w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red))
+w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red));
 
 plageBalourd = [m_BalourdMin, m_BalourdMax];
 
@@ -229,9 +229,10 @@ L_s2 = L_r - z_CG;
 % Assumes all required constants are already defined:
 % m_r, J_rz_red, L_s1, L_s2, kl_x, d, plageBalourd, etendue_mesure
 
-d = z_CG - L_a/2;  % Already defined upstream
+d = z_CG - L_a/2; 
 
-ms = linspace(0,1, 1000);         % ms sweep
+%{
+ms = linspace(0,1, 10000);         % ms sweep
 omega = linspace(0, 1257, 1257);   % omega sweep
 
 valid_ms_indices = [];
@@ -270,8 +271,8 @@ for i = 1:length(ms)
         accel_max_theta = accel_maxVect(2);
 
         % Check if within measurement range for this omega
-        if accel_max_x <= etendue_mesure(2) && accel_min_x >= etendue_mesure(1) && ...
-           accel_max_theta <= etendue_mesure(2) && accel_min_theta >= etendue_mesure(1)
+        if abs(accel_max_x) <= etendue_mesure(2) && abs(accel_min_x) >= etendue_mesure(1) && ...
+           abs(accel_max_theta) <= etendue_mesure(2) && abs(accel_min_theta) >= etendue_mesure(1)
             isValid = true;
             break;  % No need to check other omega values
         end
@@ -288,6 +289,71 @@ disp(valid_ms_indices);
 
 disp('Corresponding m_s values:');
 disp(ms(valid_ms_indices));
+%}
+
+
+% Choose a specific m_s value
+m_s = 1;  % Change this to the value you want to analyze
+% OR: m_s = ms(valid_ms_indices(1));  % Example: first valid one
+omega = linspace(0, 1257, 1257);
+% Recompute matrices
+M = [(m_r + 2*m_s),           m_s*(L_s2 - L_s1);
+     m_s*(L_s2 - L_s1),       J_rz_red + m_s*(L_s1^2 + L_s2^2)];
+
+K = [4*kl_x,                  2*kl_x*(L_s2 - L_s1);
+     2*kl_x*(L_s2 - L_s1),    2*kl_x*(L_s1^2 + L_s2^2)];
+
+D = [1;d];
+
+% Initialize result vectors
+accel_min_x = zeros(size(omega));
+accel_max_x = zeros(size(omega));
+accel_min_theta = zeros(size(omega));
+accel_max_theta = zeros(size(omega));
+
+% Compute accelerations
+for j = 1:length(omega)
+    w = omega(j);
+    
+
+    invMat = inv(K - w^2 * M);
+ 
+
+    a_min = w^4 * plageBalourd(1) * (invMat * D);
+    a_max = w^4 * plageBalourd(2) * (invMat * D);
+
+    accel_min_x(j) = a_min(1);
+    accel_max_x(j) = a_max(1);
+    accel_min_theta(j) = a_min(2);
+    accel_max_theta(j) = a_max(2);
+end
+
+% Plotting
+figure;
+
+subplot(2,2,1);
+plot(omega, accel_min_x);
+xlabel('\omega (rad/s)');
+ylabel('accel_{min,x}');
+title('Minimum X Acceleration');
+
+subplot(2,2,2);
+plot(omega, accel_max_x);
+xlabel('\omega (rad/s)');
+ylabel('accel_{max,x}');
+title('Maximum X Acceleration');
+
+subplot(2,2,3);
+plot(omega, accel_min_theta);
+xlabel('\omega (rad/s)');
+ylabel('accel_{min,\theta}');
+title('Minimum \theta Acceleration');
+
+subplot(2,2,4);
+plot(omega, accel_max_theta);
+xlabel('\omega (rad/s)');
+ylabel('accel_{max,\theta}');
+title('Maximum \theta Acceleration');
 
 
     
