@@ -191,6 +191,8 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
 
     [V,D] = eig(N)
 
+    w = min(diag(D))
+
 
 
 
