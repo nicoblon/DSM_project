@@ -177,7 +177,7 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
     % équations de mouvement des 7 masses
     % [M](d^2/dt^2)theta + [K]theta = Q*
 
-    M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red])
+    M = diag([J_mz_red J_rz_red J_pz_red J_pz_red J_pz_red J_pz_red J_pz_red]);
     %Raideur equivalente pour schéma du modèle dynamique réduit et simplifié
     K = [k_c1_red+k_c7_red, 0, -k_c1_red, 0, 0, 0, -k_c7_red
                      0, k_c6_red+k_c5_red, 0,0, 0, -k_c5_red, -k_c6_red
@@ -185,13 +185,13 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
                      0, 0, -k_c2_red, k_c3_red+k_c2_red, -k_c3_red, 0, 0
                      0, 0, 0, -k_c3_red, k_c4_red+k_c3_red, -k_c4_red, 0
                      0, -k_c5_red, 0, 0, -k_c4_red, k_c5_red+k_c4_red, 0
-                     -k_c7_red, -k_c6_red, 0, 0, 0, 0, k_c7_red+k_c6_red]
+                     -k_c7_red, -k_c6_red, 0, 0, 0, 0, k_c7_red+k_c6_red];
     
-    N = (inv(M)*K)
+    N = (inv(M)*K);
 
-    [V,D] = eig(N)
+    [V,D] = eig(N);
 
-    w = min(diag(D))
+    w = min(diag(D));
 
 
 
@@ -226,16 +226,16 @@ plageBalourd = [m_BalourdMin, m_BalourdMax];
 % Simplify the solution
 %xSol = simplify(sol)
 
-L_s1 = L_r/2 + z_CGcentre;
-L_s2 = L_r/2 - z_CGcentre;
+L_s1 = 0.4*L_r + z_CGcentre;
+L_s2 = 0.4*L_r - z_CGcentre;
 % Assumes all required constants are already defined:
 % m_r, J_rz_red, L_s1, L_s2, kl_x, d, plageBalourd, etendue_mesure
 
 d = z_CG - L_a/2; 
 
 
-ms = linspace(0.001, 0.1, 1000);         % ms sweep
-omega = linspace(0, 1257, 1257);   % omega sweep
+ms = linspace(0.0001, 0.2, 1000);         % ms sweep
+omega = linspace(0, 1257, 1257);% omega sweep
 
 for i = 1:length(ms)
     m_s = ms(i);
@@ -271,10 +271,10 @@ for i = 1:length(ms)
         %Check if both are in range for this omega
         if accel_x1_min >= etendue_mesure(1) && accel_x1_min <= etendue_mesure(2) && ...
            accel_x1_max >= etendue_mesure(1) && accel_x1_max <= etendue_mesure(2) && accel_x2_min >= etendue_mesure(1) && accel_x2_min <= etendue_mesure(2) && ...
-           accel_x2_max >= etendue_mesure(1) && accel_x2_max <= etendue_mesure(2)
+          accel_x2_max >= etendue_mesure(1) && accel_x2_max <= etendue_mesure(2)
             isValid = true;
             break;  % Found a valid ω that satisfies both
-        end
+        end      
     end
 
     if isValid
@@ -301,3 +301,44 @@ natural_frequencies = 60/(2*pi)*sqrt(eigenvalues);
 % Display
 disp('Natural angular frequencies (RPM):');
 disp(natural_frequencies);
+
+% Preallocate for speed
+accel_x1_vals = zeros(size(omega));
+accel_x2_vals = zeros(size(omega));
+
+% Use m_BalourdMax for plotting
+U = m_BalourdMax;
+D = [1; d];
+
+for j = 1:length(omega)
+    w = omega(j);
+
+    % Recompute matrices (same m_s)
+    M = [(m_r + 2*m_s),            m_s*(L_s2 - L_s1);
+         m_s*(L_s2 - L_s1),        J_rz_red + m_s*(L_s1^2 + L_s2^2)];
+
+    K = [4*kl_x,                   2*kl_x*(L_s2 - L_s1);
+         2*kl_x*(L_s2 - L_s1),     2*kl_x*(L_s1^2 + L_s2^2)];
+
+    invertedMatrix = (K - w^2 * M) \ eye(2);
+    accelVect = w^4 * U * (invertedMatrix * D);
+
+    accel_x = accelVect(1);
+    accel_theta = accelVect(2);
+
+    accel_x1_vals(j) = abs(accel_x - L_s1 * accel_theta);
+    accel_x2_vals(j) = abs(accel_x + L_s2 * accel_theta);
+end
+
+% Plotting
+figure;
+plot(omega, accel_x1_vals, 'b', 'LineWidth', 1.5); hold on;
+plot(omega, accel_x2_vals, 'r', 'LineWidth', 1.5);
+yline(etendue_mesure(1), '--k', 'Min threshold');
+yline(etendue_mesure(2), '--k', 'Max threshold');
+xlabel('\omega (rad/s)');
+ylabel('Acceleration magnitude (m/s^2)');
+legend('Accel x_1', 'Accel x_2', 'Thresholds');
+title(['Sensor Accelerations vs \omega for m_{s} = ' num2str(m_s, '%.4f') ', m_{bal} = ' num2str(m_BalourdMax)]);
+grid on;
+

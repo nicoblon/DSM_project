@@ -187,9 +187,11 @@ a_m = b_red/J_z_red*exp(a_red/J_z_red*t);
                      0, -k_c5_red, 0, 0, -k_c4_red, k_c5_red+k_c4_red, 0
                      -k_c7_red, -k_c6_red, 0, 0, 0, 0, k_c7_red+k_c6_red]
     
-    N = (inv(M)*K)
+    N = (inv(M)*K);
 
-    [V,D] = eig(N)
+    [V,D] = eig(N);
+
+    w = min(diag(D));
 
 
 
@@ -261,23 +263,24 @@ for i = 1:length(ms)
         accel_theta_min = accelVect_min(2);
         accel_x_max = accelVect_max(1);
         accel_theta_max = accelVect_max(2);
-        %accel_x1_min = abs(accel_x_min - L_s1*accel_theta_min);
-        %accel_x2_min = abs(accel_x_min + L_s2*accel_theta_min);
-        %accel_x1_max = abs(accel_x_max - L_s1*accel_theta_max);
-        %accel_x2_max = abs(accel_x_max + L_s2*accel_theta_max);
+        accel_x1_min = abs(accel_x_min - L_s1*accel_theta_min);
+        accel_x2_min = abs(accel_x_min + L_s2*accel_theta_min);
+        accel_x1_max = abs(accel_x_max - L_s1*accel_theta_max);
+        accel_x2_max = abs(accel_x_max + L_s2*accel_theta_max);
 
-        % Check if both are in range for this omega
+        %Check if both are in range for this omega
         %if accel_x1_min >= etendue_mesure(1) && accel_x1_min <= etendue_mesure(2) && ...
            %accel_x1_max >= etendue_mesure(1) && accel_x1_max <= etendue_mesure(2) && accel_x2_min >= etendue_mesure(1) && accel_x2_min <= etendue_mesure(2) && ...
-           %accel_x2_max >= etendue_mesure(1) && accel_x2_max <= etendue_mesure(2)
+          % accel_x2_max >= etendue_mesure(1) && accel_x2_max <= etendue_mesure(2)
             %isValid = true;
             %break;  % Found a valid ω that satisfies both
         %end
         if accel_x_min >= etendue_mesure(1) && accel_x_min <= etendue_mesure(2) && ...
-           accel_x_max >= etendue_mesure(1) && accel_x_max <= etendue_mesure(2) 
+           accel_x_max >= etendue_mesure(1) && accel_x_max <= etendue_mesure(2)
             isValid = true;
-            break;  % Found a valid ω that satisfies both
-        end
+            break;
+        end   
+            
     end
 
     if isValid
@@ -285,3 +288,22 @@ for i = 1:length(ms)
         break;
     end
 end
+% Construct matrices again with valid m_s
+M = [(m_r + 2*m_s),            m_s*(L_s2 - L_s1);
+     m_s*(L_s2 - L_s1),        J_rz_red + m_s*(L_s1^2 + L_s2^2)];
+
+K = [4*kl_x,                   2*kl_x*(L_s2 - L_s1);
+     2*kl_x*(L_s2 - L_s1),     2*kl_x*(L_s1^2 + L_s2^2)];
+
+% Generalized eigenvalue problem: M⁻¹K
+M_invK = M \ K;
+
+% Compute eigenvalues and eigenvectors
+eigenvalues = eig(M_invK);
+
+% Compute natural angular frequencies
+natural_frequencies = 60/(2*pi)*sqrt(eigenvalues);
+
+% Display
+disp('Natural angular frequencies (RPM):');
+disp(natural_frequencies);
