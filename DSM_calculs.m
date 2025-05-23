@@ -205,20 +205,7 @@ K_c_tot_red = K_equivalent1+K_equivalent2;
 
 w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red));
 
-%syms x(t) M K
-
-% Define derivatives
-%Dx = diff(x, t);
-%D2x = diff(x, t, 2);
-
-% Define the differential equation
-%eqn = M*D2x + K*x == 0;
-
-% Solve the equation symbolically
-%sol = dsolve(eqn);
-
-% Simplify the solution
-%xSol = simplify(sol)
+%========= Réponse forcée du rotor ================
 
 %Plage du balourd
 
@@ -262,14 +249,13 @@ w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red));
     
             for j = 1:length(omega)
                 w = omega(j);
-                D_min = w^2*m_BalourdMin*[1; d];
-                D_max = w^2*m_BalourdMax*[1; d];
+                D = [1; d];
         
                 invertedMatrix = (K - w^2 * M) \ eye(2);
         
                 % Compute accelerations for both min and max imbalance
-                accelVect_min = w^2 * (invertedMatrix * D_min);
-                accelVect_max = w^2 * (invertedMatrix * D_max);
+                accelVect_min = w^4 * m_BalourdMin * (invertedMatrix * D);
+                accelVect_max = w^4 * m_BalourdMax * (invertedMatrix * D);
         
                 accel_x_min = accelVect_min(1);
                 accel_theta_min = accelVect_min(2);
@@ -282,8 +268,8 @@ w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red));
                 accel_x2_max = abs(accel_x_max + L_s2 * accel_theta_max);
         
                 % If any acceleration is outside the measurement range, m_s is not valid
-                if any([accel_x1_min, accel_x2_min] < etendue_mesure(1)) || ...
-                   any([ accel_x1_max, accel_x2_max] > etendue_mesure(2))
+                if any([accel_x1_min, accel_x1_max, accel_x2_min, accel_x2_max] < etendue_mesure(1)) || ...
+                   any([accel_x1_min, accel_x1_max, accel_x2_min, accel_x2_max] > etendue_mesure(2))
                     isValid = false;
                     break;  % No need to check other ω
                 end
@@ -295,13 +281,10 @@ w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red));
         end
    end
 
-% Use the m_s found from the previous loop
-% Assuming m_s is defined and valid at this point
+   
 
-
-% Define the frequency sweep
 omega = linspace(0, 1257, 1000);
-m_s = 0.1;
+m_s = 0.110;
 % Mass and stiffness matrices using found m_s
 M = [(m_r + 2*m_s),            m_s*(L_s2 - L_s1);
      m_s*(L_s2 - L_s1),        J_ry + m_s*(L_s1^2 + L_s2^2)];
@@ -309,8 +292,8 @@ M = [(m_r + 2*m_s),            m_s*(L_s2 - L_s1);
 K = [4*kl_x,                   2*kl_x*(L_s2 - L_s1);
      2*kl_x*(L_s2 - L_s1),     2*kl_x*(L_s1^2 + L_s2^2)];
 
-eig(M/K);
-
+eigenvalues = eig(M \ K);
+natural_frequencies = sqrt(eigenvalues);
 % Preallocate results
 accel_x1_min = zeros(size(omega));
 accel_x1_max = zeros(size(omega));
@@ -399,4 +382,3 @@ ylabel('Displacement (m)');
 title(sprintf('Maximum Displacements for m_s = %.4f kg', m_s));
 legend;
 grid on;
-
