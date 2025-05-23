@@ -293,7 +293,7 @@ K = [4*kl_x,                   2*kl_x*(L_s2 - L_s1);
      2*kl_x*(L_s2 - L_s1),     2*kl_x*(L_s1^2 + L_s2^2)];
 
 eigenvalues = eig(M \ K);
-natural_frequencies = sqrt(eigenvalues);
+natural_frequencies = 60*sqrt(eigenvalues)/2/pi
 % Preallocate results
 accel_x1_min = zeros(size(omega));
 accel_x1_max = zeros(size(omega));
