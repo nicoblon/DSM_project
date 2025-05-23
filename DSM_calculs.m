@@ -226,119 +226,156 @@ plageBalourd = [m_BalourdMin, m_BalourdMax];
 % Simplify the solution
 %xSol = simplify(sol)
 
-L_s1 = 0.4*L_r + z_CGcentre;
-L_s2 = 0.4*L_r - z_CGcentre;
-% Assumes all required constants are already defined:
-% m_r, J_rz_red, L_s1, L_s2, kl_x, d, plageBalourd, etendue_mesure
+%Plage du balourd
 
-d = z_CG - L_a/2; 
+    m_BalourdMin = D_r/2 * m_r *0.00001;
+    m_BalourdMax = D_r/2 * m_r * 0.001;
+    plageBalourd = [m_BalourdMin, m_BalourdMax];
 
 
-ms = linspace(0.0001, 0.2, 1000);         % ms sweep
-omega = linspace(0, 1257, 1257);% omega sweep
-
-for i = 1:length(ms)
-    m_s = ms(i);
-    isValid = false;
-
-    for j = 1:length(omega)
-        w = omega(j);
-
-        % Mass matrix
+% Calcul pour trouver m_s
+    L_s1 = 0.4*L_r + z_CGcentre;
+    L_s2 = 0.4*L_r - z_CGcentre;
+    
+    d = z_CG - L_a/2; 
+    
+    
+    ms = linspace(0.001, 0.5, 1000);         % ms sweep
+    D = [1; d];
+    
+    for i = 1:length(ms)
+        m_s = ms(i);
+        isValid = true;  % Assume valid unless proven otherwise
+        
+        % Mass and stiffness matrices
         M = [(m_r + 2*m_s),            m_s*(L_s2 - L_s1);
-             m_s*(L_s2 - L_s1),        J_rz_red + m_s*(L_s1^2 + L_s2^2)];
-
-        % Stiffness matrix
+             m_s*(L_s2 - L_s1),        J_rz + m_s*(L_s1^2 + L_s2^2)];
+        
         K = [4*kl_x,                   2*kl_x*(L_s2 - L_s1);
              2*kl_x*(L_s2 - L_s1),     2*kl_x*(L_s1^2 + L_s2^2)];
+        
+        % Eigenvalue problem to get natural frequency
+        eigenvalues = eig(M \ K);
+        natural_frequencies = sqrt(eigenvalues);  % rad/s
 
-        D = [1; d];
-        invertedMatrix = (K - w^2 * M) \ eye(2);
+        w_max = max(natural_frequencies);
 
-        % Compute both accelerations
-        accelVect_min = w^4 * m_BalourdMin * (invertedMatrix * D);
-        accelVect_max = w^4 * m_BalourdMax * (invertedMatrix * D);
+        if w_max >= 1257
+        continue;
+        end
+        
+        buffer = 0.2;  % 1% buffer
+        omega = linspace(w_max * (1 + buffer), 1257, 1000);   % omega sweep
+        
+        for j = 1:length(omega)
+            
+            w = omega(j);
+            
+        
+            invertedMatrix = (K - w^2 * M)\eye(2);
+        
+            % Compute accelerations for both min and max imbalance
+            accelVect_min = w^4 * m_BalourdMin * (invertedMatrix * D);
+            accelVect_max = w^4 * m_BalourdMax * (invertedMatrix * D);
+        
+            accel_x_min = accelVect_min(1);
+            accel_theta_min = accelVect_min(2);
+            accel_x_max = accelVect_max(1);
+            accel_theta_max = accelVect_max(2);
+        
+            accel_x1_min = abs(accel_x_min - L_s1 * accel_theta_min);
+            accel_x2_min = abs(accel_x_min + L_s2 * accel_theta_min);
+            accel_x1_max = abs(accel_x_max - L_s1 * accel_theta_max);
+            accel_x2_max = abs(accel_x_max + L_s2 * accel_theta_max);
+        
+            % If any acceleration is outside the measurement range, m_s is not valid
+            if any([accel_x1_min, accel_x1_max, accel_x2_min, accel_x2_max] < etendue_mesure(1)) || ...
+           any([accel_x1_min, accel_x1_max, accel_x2_min, accel_x2_max] > etendue_mesure(2))
+            isValid = false;
+            break;  % No need to check other ω
+            end  
+         end
 
-        accel_x_min = accelVect_min(1);
-        accel_theta_min = accelVect_min(2);
-        accel_x_max = accelVect_max(1);
-        accel_theta_max = accelVect_max(2);
-        accel_x1_min = abs(accel_x_min - L_s1*accel_theta_min);
-        accel_x2_min = abs(accel_x_min + L_s2*accel_theta_min);
-        accel_x1_max = abs(accel_x_max - L_s1*accel_theta_max);
-        accel_x2_max = abs(accel_x_max + L_s2*accel_theta_max);
+      if isValid
+          fprintf('Minimal valid m_s for ALL ω: %.4f\n', m_s);
+          break;
+      end
+   end
 
-        %Check if both are in range for this omega
-        if accel_x1_min >= etendue_mesure(1) && accel_x1_min <= etendue_mesure(2) && ...
-           accel_x1_max >= etendue_mesure(1) && accel_x1_max <= etendue_mesure(2) && accel_x2_min >= etendue_mesure(1) && accel_x2_min <= etendue_mesure(2) && ...
-          accel_x2_max >= etendue_mesure(1) && accel_x2_max <= etendue_mesure(2)
-            isValid = true;
-            break;  % Found a valid ω that satisfies both
-        end      
-    end
+% Use the m_s found from the previous loop
+% Assuming m_s is defined and valid at this point
 
-    if isValid
-        fprintf('Minimal valid m_s: %.4f\n', m_s);
-        break;
-    end
-end
-% Construct matrices again with valid m_s
+% Define the frequency sweep
+omega = linspace(0, 1257, 1000);
+m_s_min = 0.1;
+% Mass and stiffness matrices using found m_s
 M = [(m_r + 2*m_s),            m_s*(L_s2 - L_s1);
      m_s*(L_s2 - L_s1),        J_rz_red + m_s*(L_s1^2 + L_s2^2)];
 
 K = [4*kl_x,                   2*kl_x*(L_s2 - L_s1);
      2*kl_x*(L_s2 - L_s1),     2*kl_x*(L_s1^2 + L_s2^2)];
 
-% Generalized eigenvalue problem: M⁻¹K
-M_invK = M \ K;
-
-% Compute eigenvalues and eigenvectors
-eigenvalues = eig(M_invK);
-
-% Compute natural angular frequencies
-natural_frequencies = 60/(2*pi)*sqrt(eigenvalues);
-
-% Display
-disp('Natural angular frequencies (RPM):');
-disp(natural_frequencies);
-
-% Preallocate for speed
-accel_x1_vals = zeros(size(omega));
-accel_x2_vals = zeros(size(omega));
-
-% Use m_BalourdMax for plotting
-U = m_BalourdMax;
-D = [1; d];
+% Preallocate results
+accel_x1_min = zeros(size(omega));
+accel_x1_max = zeros(size(omega));
+accel_x2_min = zeros(size(omega));
+accel_x2_max = zeros(size(omega));
 
 for j = 1:length(omega)
     w = omega(j);
+    A = K - w^2 * M;
 
-    % Recompute matrices (same m_s)
-    M = [(m_r + 2*m_s),            m_s*(L_s2 - L_s1);
-         m_s*(L_s2 - L_s1),        J_rz_red + m_s*(L_s1^2 + L_s2^2)];
+    % Skip if nearly singular
+    if rcond(A) < 1e-12
+        accel_x1_min(j) = NaN;
+        accel_x1_max(j) = NaN;
+        accel_x2_min(j) = NaN;
+        accel_x2_max(j) = NaN;
+        continue;
+    end
 
-    K = [4*kl_x,                   2*kl_x*(L_s2 - L_s1);
-         2*kl_x*(L_s2 - L_s1),     2*kl_x*(L_s1^2 + L_s2^2)];
+    invMatrix = A \ eye(2);
+    D = [1; d];
 
-    invertedMatrix = (K - w^2 * M) \ eye(2);
-    accelVect = w^4 * U * (invertedMatrix * D);
+    % Compute both accelerations
+    accelVect_min = w^4 * m_BalourdMin * (invMatrix * D);
+    accelVect_max = w^4 * m_BalourdMax * (invMatrix * D);
 
-    accel_x = accelVect(1);
-    accel_theta = accelVect(2);
+    accel_x_min = accelVect_min(1);
+    accel_theta_min = accelVect_min(2);
+    accel_x_max = accelVect_max(1);
+    accel_theta_max = accelVect_max(2);
 
-    accel_x1_vals(j) = abs(accel_x - L_s1 * accel_theta);
-    accel_x2_vals(j) = abs(accel_x + L_s2 * accel_theta);
+    % x1 = x - L_s1·θ ; x2 = x + L_s2·θ
+    accel_x1_min(j) = abs(accel_x_min - L_s1 * accel_theta_min);
+    accel_x1_max(j) = abs(accel_x_max - L_s1 * accel_theta_max);
+    accel_x2_min(j) = abs(accel_x_min + L_s2 * accel_theta_min);
+    accel_x2_max(j) = abs(accel_x_max + L_s2 * accel_theta_max);
 end
 
-% Plotting
+% ---- Plot 1: Minimum accelerations ----
 figure;
-plot(omega, accel_x1_vals, 'b', 'LineWidth', 1.5); hold on;
-plot(omega, accel_x2_vals, 'r', 'LineWidth', 1.5);
-yline(etendue_mesure(1), '--k', 'Min threshold');
-yline(etendue_mesure(2), '--k', 'Max threshold');
-xlabel('\omega (rad/s)');
-ylabel('Acceleration magnitude (m/s^2)');
-legend('Accel x_1', 'Accel x_2', 'Thresholds');
-title(['Sensor Accelerations vs \omega for m_{s} = ' num2str(m_s, '%.4f') ', m_{bal} = ' num2str(m_BalourdMax)]);
+hold on;
+plot(omega, accel_x1_min, 'b-', 'DisplayName', 'x₁ min');
+plot(omega, accel_x2_min, 'r-', 'DisplayName', 'x₂ min');
+yline(etendue_mesure(1), 'k--', 'DisplayName', 'Measurement min');
+yline(etendue_mesure(2), 'k--', 'DisplayName', 'Measurement max');
+xlabel('ω (rad/s)');
+ylabel('Acceleration (m/s²)');
+title(sprintf('Minimum Accelerations for m_s = %.4f kg', m_s));
+legend;
+grid on;
+
+% ---- Plot 2: Maximum accelerations ----
+figure;
+hold on;
+plot(omega, accel_x1_max, 'b-', 'DisplayName', 'x₁ max');
+plot(omega, accel_x2_max, 'r-', 'DisplayName', 'x₂ max');
+yline(etendue_mesure(1), 'k--', 'DisplayName', 'Measurement min');
+yline(etendue_mesure(2), 'k--', 'DisplayName', 'Measurement max');
+xlabel('ω (rad/s)');
+ylabel('Acceleration (m/s²)');
+title(sprintf('Maximum Accelerations for m_s = %.4f kg', m_s));
+legend;
 grid on;
 
