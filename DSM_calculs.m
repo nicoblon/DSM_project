@@ -202,14 +202,8 @@ K_equivalent1 = 1/(1/k_c1_red+1/k_c2_red+1/k_c3_red+1/k_c4_red+1/k_c5_red);
 K_equivalent2 = (k_c7_red*k_c6_red)/(k_c7_red+k_c6_red);
 K_c_tot_red = K_equivalent1+K_equivalent2;
 
-%Plage du balourd
-
-m_BalourdMin = D_r/2 * m_r *0.00001;
-m_BalourdMax = D_r/2 * m_r * 0.001;
 
 w0_simp = sqrt(K_c_tot_red*(1/J_mz_red+1/J_rz_red));
-
-plageBalourd = [m_BalourdMin, m_BalourdMax];
 
 %syms x(t) M K
 
@@ -240,80 +234,82 @@ plageBalourd = [m_BalourdMin, m_BalourdMax];
     d = z_CG - L_a/2; 
     
     
-    ms = linspace(0.001, 0.5, 1000);         % ms sweep
+    ms = linspace(0.001, 0.3, 1000);         % ms sweep
     D = [1; d];
     
     for i = 1:length(ms)
         m_s = ms(i);
         isValid = true;  % Assume valid unless proven otherwise
-        
+    
         % Mass and stiffness matrices
         M = [(m_r + 2*m_s),            m_s*(L_s2 - L_s1);
-             m_s*(L_s2 - L_s1),        J_rz + m_s*(L_s1^2 + L_s2^2)];
-        
+             m_s*(L_s2 - L_s1),        J_ry + m_s*(L_s1^2 + L_s2^2)];
+    
         K = [4*kl_x,                   2*kl_x*(L_s2 - L_s1);
              2*kl_x*(L_s2 - L_s1),     2*kl_x*(L_s1^2 + L_s2^2)];
-        
+    
         % Eigenvalue problem to get natural frequency
         eigenvalues = eig(M \ K);
         natural_frequencies = sqrt(eigenvalues);  % rad/s
-
         w_max = max(natural_frequencies);
-
         if w_max >= 1257
-        continue;
+            continue;  % Skip this m_s, system resonance is out of range
         end
-        
-        buffer = 0.2;  % 1% buffer
-        omega = linspace(w_max * (1 + buffer), 1257, 1000);   % omega sweep
-        
-        for j = 1:length(omega)
-            
-            w = omega(j);
-            
-        
-            invertedMatrix = (K - w^2 * M)\eye(2);
-        
-            % Compute accelerations for both min and max imbalance
-            accelVect_min = w^4 * m_BalourdMin * (invertedMatrix * D);
-            accelVect_max = w^4 * m_BalourdMax * (invertedMatrix * D);
-        
-            accel_x_min = accelVect_min(1);
-            accel_theta_min = accelVect_min(2);
-            accel_x_max = accelVect_max(1);
-            accel_theta_max = accelVect_max(2);
-        
-            accel_x1_min = abs(accel_x_min - L_s1 * accel_theta_min);
-            accel_x2_min = abs(accel_x_min + L_s2 * accel_theta_min);
-            accel_x1_max = abs(accel_x_max - L_s1 * accel_theta_max);
-            accel_x2_max = abs(accel_x_max + L_s2 * accel_theta_max);
-        
-            % If any acceleration is outside the measurement range, m_s is not valid
-            if any([accel_x1_min, accel_x1_max, accel_x2_min, accel_x2_max] < etendue_mesure(1)) || ...
-           any([accel_x1_min, accel_x1_max, accel_x2_min, accel_x2_max] > etendue_mesure(2))
-            isValid = false;
-            break;  % No need to check other ω
-            end  
-         end
+    
+        buffer = 0.01;  % 1% buffer
+        omega = linspace(w_max * (1 + buffer), 1257, 1000);
 
-      if isValid
-          fprintf('Minimal valid m_s for ALL ω: %.4f\n', m_s);
-          break;
-      end
+    
+            for j = 1:length(omega)
+                w = omega(j);
+                D_min = w^2*m_BalourdMin*[1; d];
+                D_max = w^2*m_BalourdMax*[1; d];
+        
+                invertedMatrix = (K - w^2 * M) \ eye(2);
+        
+                % Compute accelerations for both min and max imbalance
+                accelVect_min = w^2 * (invertedMatrix * D_min);
+                accelVect_max = w^2 * (invertedMatrix * D_max);
+        
+                accel_x_min = accelVect_min(1);
+                accel_theta_min = accelVect_min(2);
+                accel_x_max = accelVect_max(1);
+                accel_theta_max = accelVect_max(2);
+        
+                accel_x1_min = abs(accel_x_min - L_s1 * accel_theta_min);
+                accel_x2_min = abs(accel_x_min + L_s2 * accel_theta_min);
+                accel_x1_max = abs(accel_x_max - L_s1 * accel_theta_max);
+                accel_x2_max = abs(accel_x_max + L_s2 * accel_theta_max);
+        
+                % If any acceleration is outside the measurement range, m_s is not valid
+                if any([accel_x1_min, accel_x2_min] < etendue_mesure(1)) || ...
+                   any([ accel_x1_max, accel_x2_max] > etendue_mesure(2))
+                    isValid = false;
+                    break;  % No need to check other ω
+                end
+            end
+    
+        if isValid
+            fprintf('Minimal valid m_s for ALL ω: %.4f\n', m_s);
+            break;
+        end
    end
 
 % Use the m_s found from the previous loop
 % Assuming m_s is defined and valid at this point
 
+
 % Define the frequency sweep
 omega = linspace(0, 1257, 1000);
-m_s_min = 0.1;
+m_s = 0.1;
 % Mass and stiffness matrices using found m_s
 M = [(m_r + 2*m_s),            m_s*(L_s2 - L_s1);
-     m_s*(L_s2 - L_s1),        J_rz_red + m_s*(L_s1^2 + L_s2^2)];
+     m_s*(L_s2 - L_s1),        J_ry + m_s*(L_s1^2 + L_s2^2)];
 
 K = [4*kl_x,                   2*kl_x*(L_s2 - L_s1);
      2*kl_x*(L_s2 - L_s1),     2*kl_x*(L_s1^2 + L_s2^2)];
+
+eig(M/K);
 
 % Preallocate results
 accel_x1_min = zeros(size(omega));
@@ -321,18 +317,16 @@ accel_x1_max = zeros(size(omega));
 accel_x2_min = zeros(size(omega));
 accel_x2_max = zeros(size(omega));
 
+depl_x1_min = zeros(size(omega));
+depl_x1_max = zeros(size(omega));
+depl_x2_min = zeros(size(omega));
+depl_x2_max = zeros(size(omega));
+
 for j = 1:length(omega)
     w = omega(j);
     A = K - w^2 * M;
 
-    % Skip if nearly singular
-    if rcond(A) < 1e-12
-        accel_x1_min(j) = NaN;
-        accel_x1_max(j) = NaN;
-        accel_x2_min(j) = NaN;
-        accel_x2_max(j) = NaN;
-        continue;
-    end
+   
 
     invMatrix = A \ eye(2);
     D = [1; d];
@@ -351,6 +345,13 @@ for j = 1:length(omega)
     accel_x1_max(j) = abs(accel_x_max - L_s1 * accel_theta_max);
     accel_x2_min(j) = abs(accel_x_min + L_s2 * accel_theta_min);
     accel_x2_max(j) = abs(accel_x_max + L_s2 * accel_theta_max);
+
+    depl_x1_min(j) = abs(accel_x_min - L_s1 * accel_theta_min)/ w^2;
+    depl_x1_max(j) = abs(accel_x_max - L_s1 * accel_theta_max)/ w^2;
+    depl_x2_min(j) = abs(accel_x_min + L_s2 * accel_theta_min)/ w^2;
+    depl_x2_max(j) = abs(accel_x_max + L_s2 * accel_theta_max)/ w^2;
+
+
 end
 
 % ---- Plot 1: Minimum accelerations ----
@@ -376,6 +377,26 @@ yline(etendue_mesure(2), 'k--', 'DisplayName', 'Measurement max');
 xlabel('ω (rad/s)');
 ylabel('Acceleration (m/s²)');
 title(sprintf('Maximum Accelerations for m_s = %.4f kg', m_s));
+legend;
+grid on;
+
+figure;
+hold on;
+plot(omega, depl_x1_min, 'b-', 'DisplayName', 'x₁ min');
+plot(omega, depl_x2_min, 'r-', 'DisplayName', 'x₂ min');
+xlabel('ω (rad/s)');
+ylabel('Displacement (m)');
+title(sprintf('Minimum Displacements for m_s = %.4f kg', m_s));
+legend;
+grid on;
+
+figure;
+hold on;
+plot(omega, depl_x1_max, 'b-', 'DisplayName', 'x₁ max');
+plot(omega, depl_x2_max, 'r-', 'DisplayName', 'x₂ max');
+xlabel('ω (rad/s)');
+ylabel('Displacement (m)');
+title(sprintf('Maximum Displacements for m_s = %.4f kg', m_s));
 legend;
 grid on;
 
